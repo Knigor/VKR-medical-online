@@ -21,7 +21,7 @@ class UserController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
         // Проверка, что все необходимые данные присутствуют
-        if (empty($data['fio']) || empty($data['login']) || empty($data['password'])) {
+        if (empty($data['fio']) || empty($data['login']) || empty($data['password']) || empty($data['email'])) {
             return $this->json(['error' => 'Missing parameters'], Response::HTTP_BAD_REQUEST);
         }
 
@@ -29,6 +29,7 @@ class UserController extends AbstractController
         $user = new User();
         $user->setFio($data['fio']);
         $user->setLogin($data['login']);
+        $user->setEmail($data['email']);
         $user->setHashPassword(password_hash($data['password'], PASSWORD_BCRYPT)); // Применяем хеширование пароля
         $user->setRole('user'); // Можно добавить стандартную роль
 

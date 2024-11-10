@@ -12,7 +12,7 @@ class Doctor
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(name: 'doctor_id', type: 'integer')]
     private $doctorId;
 
     #[ORM\ManyToOne(targetEntity: Specialization::class)]

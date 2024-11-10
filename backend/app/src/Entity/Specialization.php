@@ -19,6 +19,13 @@ class Specialization
     #[Groups(['specialization:read', 'specialization:write'])]
     private $nameSpecialization;
 
+
+    #[ORM\Column(type: 'integer')]
+    #[Groups(['specialization:read', 'specialization:write'])]
+    private $experience;
+
+
+
     public function getSpecializationId(): ?int
     {
         return $this->specializationId;
@@ -27,6 +34,16 @@ class Specialization
     public function getNameSpecialization(): ?string
     {
         return $this->nameSpecialization;
+    }
+
+    public function getExperience(): ?int
+    {
+        return $this->experience;
+    }
+
+    public function setExperience(int $experience)
+    {
+        return $this->experience = $experience;
     }
 
     public function setNameSpecialization(string $nameSpecialization): self
