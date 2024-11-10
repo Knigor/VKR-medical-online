@@ -35,4 +35,5 @@
 
 Установка
 
-1. Создаем Symfony проект `composer create-project symfony/skeleton:"6.1.*" .`
+1. Создаем Symfony проект `composer create-project symfony/skeleton:"7.1.*" .`
+2. Создаем Docktrine ORM `composer require symfony/orm-pack`
