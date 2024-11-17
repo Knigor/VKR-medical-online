@@ -1,0 +1,14 @@
+.cardsPopular {
+  width: 152px;
+  height: 190px;
+  border: 1px solid transparent;
+}
+
+.textPopular {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  text-align: center;
+  color: #000;
+}
