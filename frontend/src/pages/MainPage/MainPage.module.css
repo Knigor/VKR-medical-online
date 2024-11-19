@@ -13,3 +13,13 @@
   line-height: 120%;
   color: #000;
 }
+.doctors {
+}
+
+@media (max-width: 1030px) {
+  .doctors {
+    display: grid !important;
+    justify-items: start;
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  }
+}

@@ -13,7 +13,11 @@ function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<MainPage />}></Route>
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile" element={<Profile />}>
+              <Route path="history" element={<ProfileHistory />} />
+              <Route path="settings" element={<ProfileSettings />} />
+              <Route path="help" element={<ProfileHelp />} />
+            </Route>
             <Route path="/consultation" element={<Consultation />} />
           </Route>
           <Route path="*" element={<ErrorPage />} />
