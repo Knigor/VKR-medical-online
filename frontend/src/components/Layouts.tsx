@@ -23,6 +23,11 @@ function Layout() {
     }
   };
 
+  const logOut = () => {
+    dispatch(resetIsAuth());
+    navigate("/");
+  };
+
   const handleLogout = () => {
     setIsToggled((prev) => !prev);
   };
@@ -75,7 +80,7 @@ function Layout() {
               className="group flex items-center gap-[6px] cursor-pointer "
             >
               <svg
-                className="text-black group-hover:text-pink-400"
+                className="text-black transition delay-75 group-hover:text-pink-400"
                 width="36"
                 height="36"
                 viewBox="0 0 36 36"
@@ -90,7 +95,9 @@ function Layout() {
                   stroke-linejoin="round"
                 />
               </svg>
-              <p className="group-hover:text-pink-400">Профиль</p>
+              <p className="group-hover:text-pink-400 transition delay-75 pr-[12px]">
+                Профиль
+              </p>
             </div>
             <img
               className="cursor-pointer"
@@ -110,7 +117,7 @@ function Layout() {
                 </p>
                 <hr className="border border-gray-300 w-[187px] mb-[11px]"></hr>
                 <p
-                  onClick={() => dispatch(resetIsAuth())}
+                  onClick={logOut}
                   className="hover:text-pink-400 text-base leading-6 font-light cursor-pointer"
                 >
                   Выйти

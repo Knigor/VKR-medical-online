@@ -5,6 +5,9 @@ import Layout from "./components/Layouts";
 import Consultation from "./pages/Consultation";
 import { MainPage } from "./pages/MainPage";
 import ErrorPage from "./pages/ErrorPage";
+import { ProfileHistory } from "./pages/profileHistory";
+import ProfileHelp from "./pages/profileHelp/ProfileHelp";
+import { ProfileSettings } from "./pages/profileSettings";
 
 function App() {
   return (
@@ -14,7 +17,7 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<MainPage />}></Route>
             <Route path="/profile" element={<Profile />}>
-              <Route path="history" element={<ProfileHistory />} />
+              <Route index element={<ProfileHistory />} />
               <Route path="settings" element={<ProfileSettings />} />
               <Route path="help" element={<ProfileHelp />} />
             </Route>
