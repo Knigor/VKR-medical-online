@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Doctrine\DBAL\Types\Types;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'chats')]
@@ -19,11 +20,11 @@ class Chat
     #[Groups(['chat:read', 'chat:write'])]
     private $user;
 
-    #[ORM\Column(type: 'date', nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['chat:read', 'chat:write'])]
     private $createdAt;
 
-    #[ORM\Column(type: 'date', nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['chat:read', 'chat:write'])]
     private $updatedAt;
 

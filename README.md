@@ -37,3 +37,4 @@
 
 1. Создаем Symfony проект `composer create-project symfony/skeleton:"7.1.*" .`
 2. Создаем Docktrine ORM `composer require symfony/orm-pack`
+3. Для того чтобы сгенерировать ключ `php bin/console lexik:jwt:generate-keypair`

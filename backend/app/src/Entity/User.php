@@ -1,14 +1,15 @@
 <?php
 
-// src/Entity/User.php
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'users')]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
@@ -19,19 +20,19 @@ class User
     #[Groups(['user:read', 'user:write'])]
     private $fio;
 
-    #[ORM\Column(type: 'string', length: 200)]
+    #[ORM\Column(type: 'string', length: 200, unique: true)]
     #[Groups(['user:read', 'user:write'])]
-    private $login;
+    private $username;
 
-    #[ORM\Column(type: 'string', length: 200, nullable: true)]
+    #[ORM\Column(type: 'string', length: 200, nullable: false)]
     #[Groups(['user:read'])]
     private $email;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $hashPassword;
+    #[ORM\Column(type: 'string', length: 255)]
+    private $password;
 
-    #[ORM\Column(type: 'string', length: 100, nullable: true)]
-    #[Groups(['user:read'])]
+    #[ORM\Column(type: 'json',nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private $role;
 
     public function getUserId(): ?int
@@ -50,14 +51,14 @@ class User
         return $this;
     }
 
-    public function getLogin(): ?string
+    public function getUsername(): ?string
     {
-        return $this->login;
+        return $this->username;
     }
 
-    public function setLogin(string $login): self
+    public function setUsername(string $username): self
     {
-        $this->login = $login;
+        $this->username = $username;
         return $this;
     }
 
@@ -72,14 +73,14 @@ class User
         return $this;
     }
 
-    public function getHashPassword(): ?string
+    public function getPassword(): ?string
     {
-        return $this->hashPassword;
+        return $this->password;
     }
 
-    public function setHashPassword(?string $hashPassword): self
+    public function setPassword(?string $password): self
     {
-        $this->hashPassword = $hashPassword;
+        $this->password = $password;
         return $this;
     }
 
@@ -88,9 +89,30 @@ class User
         return $this->role;
     }
 
-    public function setRole(?string $role): self
+    public function setRole(?array $role): self
     {
         $this->role = $role;
         return $this;
+    }
+
+    public function getRoles(): array
+    {
+        return [$this->role ?? 'ROLE_USER'];
+    }
+
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // Очищайте временные данные пользователя, если нужно
+    }
+
+    // Реализация метода для новых версий Symfony
+    public function getUserIdentifier(): string
+    {
+        return $this->username; // Укажите поле, используемое как идентификатор
     }
 }

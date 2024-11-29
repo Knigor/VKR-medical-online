@@ -5,6 +5,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Doctrine\DBAL\Types\Types;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'messages')]
@@ -29,7 +30,7 @@ class Message
     #[Groups(['message:read', 'message:write'])]
     private $message;
 
-    #[ORM\Column(type: 'date', nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['message:read', 'message:write'])]
     private $timestamp;
 

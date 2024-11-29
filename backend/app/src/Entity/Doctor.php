@@ -1,10 +1,12 @@
-<?php 
+<?php
 
-// src/Entity/Doctor.php
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
+
 
 #[ORM\Entity]
 #[ORM\Table(name: 'doctors')]
@@ -15,10 +17,9 @@ class Doctor
     #[ORM\Column(name: 'doctor_id', type: 'integer')]
     private $doctorId;
 
-    #[ORM\ManyToOne(targetEntity: Specialization::class)]
-    #[ORM\JoinColumn(name: 'specialization_id', referencedColumnName: 'specialization_id')]
+    #[ORM\OneToMany(mappedBy: 'doctor', targetEntity: Specialization::class, cascade: ['persist', 'remove'])]
     #[Groups(['doctor:read', 'doctor:write'])]
-    private $specialization;
+    private $specializations;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'user_id')]
@@ -33,23 +34,46 @@ class Doctor
     #[Groups(['doctor:read', 'doctor:write'])]
     private $education;
 
-    #[ORM\Column(type: 'date', nullable: true)]
+    #[ORM\Column(type: 'string', length: 200, nullable: true)]
     #[Groups(['doctor:read', 'doctor:write'])]
-    private $shchedule;
+    private $qualification;
+
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    #[Groups(['doctor:read', 'doctor:write'])]
+    private $complete_consultation;
+
+
+    public function __construct()
+    {
+        $this->specializations = new ArrayCollection();
+    }
 
     public function getDoctorId(): ?int
     {
         return $this->doctorId;
     }
 
-    public function getSpecialization(): ?Specialization
+    public function getSpecializations(): Collection
     {
-        return $this->specialization;
+        return $this->specializations;
     }
 
-    public function setSpecialization(?Specialization $specialization): self
+    public function addSpecialization(Specialization $specialization): self
     {
-        $this->specialization = $specialization;
+        if (!$this->specializations->contains($specialization)) {
+            $this->specializations[] = $specialization;
+            $specialization->setDoctor($this);
+        }
+        return $this;
+    }
+
+    public function removeSpecialization(Specialization $specialization): self
+    {
+        if ($this->specializations->removeElement($specialization)) {
+            if ($specialization->getDoctor() === $this) {
+                $specialization->setDoctor(null);
+            }
+        }
         return $this;
     }
 
@@ -86,14 +110,27 @@ class Doctor
         return $this;
     }
 
-    public function getShchedule(): ?\DateTimeInterface
+    public function getQualification(): ?string
     {
-        return $this->shchedule;
+        return $this->qualification;
     }
 
-    public function setShchedule(?\DateTimeInterface $shchedule): self
+    public function setQualification(?string $qualification): self
     {
-        $this->shchedule = $shchedule;
+        $this->qualification = $qualification;
         return $this;
     }
+
+    public function getCompleteConsultation(): ?int
+    {
+        return $this->complete_consultation;
+    }
+
+    public function setCompleteConsultation(int $complete_consultation): self
+    {
+        $this->complete_consultation = $complete_consultation;
+        return $this;
+    }
+
+
 }
