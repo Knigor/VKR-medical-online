@@ -18,9 +18,6 @@ class Specialization
     #[Groups(['specialization:read', 'specialization:write'])]
     private $nameSpecialization;
 
-    #[ORM\Column(type: 'integer')]
-    #[Groups(['specialization:read', 'specialization:write'])]
-    private $experience;
 
     #[ORM\ManyToOne(targetEntity: Doctor::class)]
     #[ORM\JoinColumn(name: 'doctor_id', referencedColumnName: 'doctor_id', onDelete: 'SET NULL')]
@@ -43,16 +40,6 @@ class Specialization
         return $this;
     }
 
-    public function getExperience(): ?int
-    {
-        return $this->experience;
-    }
-
-    public function setExperience(int $experience): self
-    {
-        $this->experience = $experience;
-        return $this;
-    }
 
     public function getDoctor(): ?Doctor
     {

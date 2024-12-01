@@ -20,9 +20,21 @@ class Patient
     #[Groups(['patient:read', 'patient:write'])]
     private $user;
 
-    #[ORM\Column(type: 'string', length: 200, nullable: true)]
+    #[ORM\Column(type: 'string', length: 200)]
     #[Groups(['patient:read', 'patient:write'])]
-    private $fio;
+    private $policy_number;
+
+    #[ORM\Column(type: 'string', length: 200)]
+    #[Groups(['patient:read', 'patient:write'])]
+    private $blood_type;
+
+    #[ORM\Column(type: 'string', length: 200)]
+    #[Groups(['patient:read', 'patient:write'])]
+    private $allergies;
+
+    #[ORM\Column(type: 'string', length: 200)]
+    #[Groups(['patient:read', 'patient:write'])]
+    private $chronic_conditions;
 
     public function getPatientId(): ?int
     {
@@ -40,14 +52,43 @@ class Patient
         return $this;
     }
 
-    public function getFio(): ?string
+    public function getPolicyNumber(): ?string
     {
-        return $this->fio;
+        return $this->policy_number;
     }
 
-    public function setFio(?string $fio): self
+    public function setPolicyNumber(?string $policy_number): self
     {
-        $this->fio = $fio;
+        $this->policy_number = $policy_number;
+        return $this;
+    }
+
+    public function getBloodType(): ?string
+    {
+        return $this->blood_type;
+    }
+
+    public function setBloodType(?string $blood_type): self
+    {
+        $this->blood_type = $blood_type;
+        return $this;
+    }
+
+    public function getAllergies(): ?string {
+        return $this->allergies;
+    }
+    
+    public function setAllergies(?string $allergies): self {
+        $this->allergies = $allergies;
+        return $this;
+    }
+
+    public function getChronicConditions(): ?string {
+        return $this->chronic_conditions;
+    }
+    
+    public function setChronicConditions(?string $chronic_conditions): self {
+        $this->chronic_conditions = $chronic_conditions;
         return $this;
     }
 }

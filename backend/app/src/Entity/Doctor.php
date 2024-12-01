@@ -26,17 +26,21 @@ class Doctor
     #[Groups(['doctor:read', 'doctor:write'])]
     private $user;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['doctor:read', 'doctor:write'])]
     private $bio;
 
-    #[ORM\Column(type: 'string', length: 200, nullable: true)]
+    #[ORM\Column(type: 'string', length: 200)]
     #[Groups(['doctor:read', 'doctor:write'])]
     private $education;
 
-    #[ORM\Column(type: 'string', length: 200, nullable: true)]
+    #[ORM\Column(type: 'string', length: 200)]
     #[Groups(['doctor:read', 'doctor:write'])]
     private $qualification;
+
+    #[ORM\Column(type: 'integer')]
+    #[Groups(['doctor:read', 'doctor:write'])]
+    private $experience;
 
     #[ORM\Column(type: 'integer', options: ['default' => 0])]
     #[Groups(['doctor:read', 'doctor:write'])]
@@ -46,6 +50,17 @@ class Doctor
     public function __construct()
     {
         $this->specializations = new ArrayCollection();
+    }
+
+    public function getExperience(): ?int
+    {
+        return $this->experience;
+    }
+
+    public function setExperience(int $experience): self
+    {
+        $this->experience = $experience;
+        return $this;
     }
 
     public function getDoctorId(): ?int

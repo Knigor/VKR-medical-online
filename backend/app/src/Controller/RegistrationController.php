@@ -52,6 +52,8 @@ class RegistrationController extends AbstractController
 
         $user->setRole($role);
 
+        $user->setGender($data['gender']);
+
         // Добавляем дополнительные данные, если они есть
         if (isset($data['email'])) {
             $user->setEmail($data['email']);

@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Doctrine\DBAL\Types\Types;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'users')]
@@ -19,6 +20,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 200)]
     #[Groups(['user:read', 'user:write'])]
     private $fio;
+
+    #[ORM\Column(type: 'string', length: 200, nullable: false)]
+    #[Groups(['user:read', 'user:write'])]
+    private $gender;
 
     #[ORM\Column(type: 'string', length: 200, unique: true)]
     #[Groups(['user:read', 'user:write'])]
@@ -34,6 +39,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'json',nullable: true)]
     #[Groups(['user:read', 'user:write'])]
     private $role;
+
+    #[ORM\Column(type: 'string', length: 200, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
+    private $photo_user;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
+    private ?\DateTimeInterface $birthdate = null;
 
     public function getUserId(): ?int
     {
@@ -92,6 +105,39 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setRole(?array $role): self
     {
         $this->role = $role;
+        return $this;
+    }
+
+    public function getGender(): ?string
+    {
+        return $this->gender;
+    }
+
+    public function setGender(?string $gender): self
+    {
+        $this->gender = $gender;
+        return $this;
+    }
+
+    public function getPhotoUser(): ?string
+    {
+        return $this->photo_user;
+    }
+
+    public function setPhotoUser(?string $photo_user): self
+    {
+        $this->photo_user = $photo_user;
+        return $this;
+    }
+
+    public function getBirthdate(): ?\DateTimeInterface
+    {
+        return $this->birthdate;
+    }
+
+    public function setBirthdate(?\DateTimeInterface $birthdate): self
+    {
+        $this->birthdate = $birthdate;
         return $this;
     }
 
