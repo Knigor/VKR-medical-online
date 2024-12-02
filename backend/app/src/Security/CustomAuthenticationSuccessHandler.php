@@ -3,6 +3,9 @@
 namespace App\Security;
 
 use App\Entity\User;
+use App\Entity\Doctor;
+use App\Entity\Patient;
+use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,10 +16,14 @@ use Symfony\Component\HttpFoundation\Request;
 class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterface
 {
     private JWTTokenManagerInterface $jwtManager;
+    private EntityManagerInterface $entityManager;
 
-    public function __construct(JWTTokenManagerInterface $jwtManager)
-    {
+    public function __construct(
+        JWTTokenManagerInterface $jwtManager,
+        EntityManagerInterface $entityManager
+    ) {
         $this->jwtManager = $jwtManager;
+        $this->entityManager = $entityManager;
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): Response
@@ -28,7 +35,11 @@ class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler
             throw new \LogicException('User not found in token');
         }
 
-        // Генерация JWT токена, если он не передан
+        // Проверяем, является ли пользователь доктором
+        $doctor = $this->entityManager->getRepository(Doctor::class)->findOneBy(['user' => $user]);
+        $patient = $this->entityManager->getRepository(Patient::class)->findOneBy(['user' => $user]);
+
+        // Генерация JWT токена
         $jwt = $this->jwtManager->create($user);
 
         // Формирование данных ответа
@@ -40,10 +51,11 @@ class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler
             'id' => $user->getUserId(),
             'role' => $user->getRoles(),
             'gender' => $user->getGender(),
+            'doctorId' => $doctor ? $doctor->getDoctorId() : null,
+            'patientId' => $patient ? $patient->getPatientId() : null
         ];
 
         // Возвращаем кастомный JSON ответ
         return new JsonResponse($data);
     }
 }
-
