@@ -1,1 +1,0 @@
-export { CardsPopular } from "./CardsPopular";

@@ -1,29 +1,19 @@
-import { config as jsConfig } from "@eslint/js";
-import { config as globalsConfig } from "globals";
-import { config as reactHooksConfig } from "eslint-plugin-react-hooks";
-import { config as reactRefreshConfig } from "eslint-plugin-react-refresh";
-import { config as tseslintConfig } from "typescript-eslint";
+import js from '@eslint/js'
+import pluginVue from 'eslint-plugin-vue'
+import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 
-export default tseslintConfig(
-  { ignorePatterns: ["dist"] },
+export default [
   {
-    extends: [jsConfig.recommended, ...tseslintConfig.recommended],
-    files: ["**/*.{ts,tsx}"],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: globalsConfig.browser,
-    },
-    plugins: {
-      "react-hooks": reactHooksConfig,
-      "react-refresh": reactRefreshConfig,
-    },
-    rules: {
-      ...reactHooksConfig.rules,
-      "react-refresh/only-export-components": [
-        "warn",
-        { allowConstantExport: true },
-      ],
-      "no-unused-vars": "off",
-    },
-  }
-);
+    name: 'app/files-to-lint',
+    files: ['**/*.{js,mjs,jsx,vue}'],
+  },
+
+  {
+    name: 'app/files-to-ignore',
+    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**'],
+  },
+
+  js.configs.recommended,
+  ...pluginVue.configs['flat/essential'],
+  skipFormatting,
+]

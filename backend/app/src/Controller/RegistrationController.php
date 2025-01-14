@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Patient;
+use App\Entity\Doctor;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,22 +22,18 @@ class RegistrationController extends AbstractController
         EntityManagerInterface $entityManager,
         UserPasswordHasherInterface $passwordHasher,
         ValidatorInterface $validator
-    ): JsonResponse {   
-        // Декодируем JSON запрос
+    ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
-        // Проверяем наличие обязательных данных
-        if (!isset($data['username'], $data['password'])) {
-            return new JsonResponse(['error' => 'Missing username or password'], Response::HTTP_BAD_REQUEST);
+        if (!isset($data['username'], $data['password'], $data['role'])) {
+            return new JsonResponse(['error' => 'Missing username, password, or role'], Response::HTTP_BAD_REQUEST);
         }
 
-        // Проверяем уникальность пользователя
         $existingUser = $entityManager->getRepository(User::class)->findOneBy(['username' => $data['username']]);
         if ($existingUser) {
             return new JsonResponse(['error' => 'Username already exists'], Response::HTTP_CONFLICT);
         }
-        
-        // проверяем уникальность на email пользователя
+
         $existEmailUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $data['email']]);
         if ($existEmailUser) {
             return new JsonResponse(['error' => 'Email already exists'], Response::HTTP_CONFLICT);
@@ -44,41 +42,43 @@ class RegistrationController extends AbstractController
         // Создаем нового пользователя
         $user = new User();
         $user->setUsername($data['username']);
-        $user->setPassword(
-            $passwordHasher->hashPassword($user, $data['password'])
-        );
+        $user->setPassword($passwordHasher->hashPassword($user, $data['password']));
+        $user->setGender($data['gender'] ?? null);
+        $user->setEmail($data['email']);
+        $user->setFio($data['fio']);
 
-        $role = ['ROLE_USER']; // default role
-
-        $user->setRole($role);
-
-        $user->setGender($data['gender']);
-
-        // Добавляем дополнительные данные, если они есть
-        if (isset($data['email'])) {
-            $user->setEmail($data['email']);
+        // Устанавливаем роль
+        $role = $data['role'];
+        if (!in_array($role, ['ROLE_USER', 'ROLE_DOCTOR'], true)) {
+            return new JsonResponse(['error' => 'Invalid role provided. Use ROLE_USER or ROLE_DOCTOR.'], Response::HTTP_BAD_REQUEST);
         }
 
-        if (isset($data['fio'])) {
-            $user->setFio($data['fio']);
-        }
+        $user->setRole([$role]);
 
-        
-
-        // Проверяем валидность сущности (если есть аннотации валидации)
         $errors = $validator->validate($user);
         if (count($errors) > 0) {
-            return new JsonResponse([
-                'error' => 'Validation failed',
-                'details' => (string) $errors,
-            ], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Validation failed', 'details' => (string) $errors], Response::HTTP_BAD_REQUEST);
         }
 
-        // Сохраняем пользователя в базе данных
         $entityManager->persist($user);
         $entityManager->flush();
 
-        // Возвращаем успешный ответ
+        // Если роль DOCTOR, создаем запись в таблице Doctor
+        if ($role === 'ROLE_DOCTOR') {
+            $doctor = new Doctor();
+            $doctor->setUser($user);
+            $entityManager->persist($doctor);
+        }
+
+        // Если роль USER, создаем запись в таблице Patient
+        if ($role === 'ROLE_USER') {
+            $patient = new Patient();
+            $patient->setUser($user);
+            $entityManager->persist($patient);
+        }
+
+        $entityManager->flush();
+
         return new JsonResponse(['message' => 'User successfully registered'], Response::HTTP_CREATED);
     }
 }

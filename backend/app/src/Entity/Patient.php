@@ -20,19 +20,19 @@ class Patient
     #[Groups(['patient:read', 'patient:write'])]
     private $user;
 
-    #[ORM\Column(type: 'string', length: 200)]
+    #[ORM\Column(type: 'string', length: 200, nullable: true)]
     #[Groups(['patient:read', 'patient:write'])]
     private $policy_number;
 
-    #[ORM\Column(type: 'string', length: 200)]
+    #[ORM\Column(type: 'string', length: 200, nullable: true)]
     #[Groups(['patient:read', 'patient:write'])]
     private $blood_type;
 
-    #[ORM\Column(type: 'string', length: 200)]
+    #[ORM\Column(type: 'string', length: 200, nullable: true)]
     #[Groups(['patient:read', 'patient:write'])]
     private $allergies;
 
-    #[ORM\Column(type: 'string', length: 200)]
+    #[ORM\Column(type: 'string', length: 200, nullable: true)]
     #[Groups(['patient:read', 'patient:write'])]
     private $chronic_conditions;
 
