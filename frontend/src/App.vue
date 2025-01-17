@@ -1,21 +1,70 @@
 <script setup>
-import { RouterView, RouterLink } from 'vue-router'
-import { useColorMode } from '@vueuse/core'
+import { RouterView } from 'vue-router'
+import { HeartPulse, IdCard } from 'lucide-vue-next'
+import { Button } from './components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { ref } from 'vue'
+import AuthModal from '@/components/AuthModal.vue'
 
-const mode = useColorMode()
+const isAuth = ref(false)
+const isModalProfile = ref(false)
+const isModalOpen = ref(false) // Управление модальным окном
 </script>
 
 <template>
   <div class="flex flex-col min-h-screen">
-    <header class="flex flex-wrap items-center justify-between h-[146px] ml-[68px] mr-[68px]"></header>
-    <hr class="max-sm:mt-[20px]"></hr>
+    <header class="flex flex-wrap items-center justify-between h-[146px] ml-[68px] mr-[68px]">
+      <div class="flex flex-wrap items-center gap-[5px]">
+        <HeartPulse size="40" color="#F472B6" />
+        <h1 class="text-3xl font-golos leading-9 font-semibold">Твоё здоровье</h1>
+      </div>
+
+      <div v-if="isAuth" class="mt-2 flex flex-wrap items-center gap-[5px]">
+        <div class="flex flex-wrap items-center gap-[5px] hover:text-[#F472B6] hover:delay-50">
+          <IdCard class="cursor-pointer" size="40" stroke-width="1" />
+          <p class="text-base leading-6 font-normal mr-[6px] cursor-pointer font-golos">Профиль</p>
+        </div>
+        <Avatar @click="isModalProfile = !isModalProfile" class="cursor-pointer h-[40px] w-[40px]">
+          <AvatarImage src="/icons/avatar-test.svg" alt="@radix-vue" />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
+
+        <div
+          v-if="isModalProfile"
+          class="w-[234px] h-[90px] shadow-2xl border-[1px] bg-white z-30 top-[110px] right-[70px] absolute stroke-gray-300"
+        >
+          <div class="flex flex-col ml-[23px] mt-[12px]">
+            <p
+              class="text-lg leading-7 font-normal text-black mb-[5px] cursor-pointer w-[53px] hover:text-[#F472B6] font-golos"
+            >
+              Егор
+            </p>
+            <hr class="w-[187px]" />
+            <p
+              @click="isAuth = false"
+              class="mb-[11px] mt-[11px] text-base leading-6 font-light text-black cursor-pointer w-[49px] hover:text-[#F472B6] font-golos"
+            >
+              Выйти
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div v-else class="mt-2">
+        <Button @click="isModalOpen = true" variant="outline">
+          <span class="underline text-base leading-8 font-light font-golos">Войти</span>
+        </Button>
+      </div>
+    </header>
+    <hr class="max-sm:mt-[20px]" />
     <RouterView />
-    <footer class="h-[100px] flex items-center justify-center ">
-        <h1 class="text-gray-400 text-align-center">
-          Выпусканая квалификационная работа для проведения врачебных
-          консультаций в режиме онлайн
-        </h1>
-      </footer>
+    <footer class="h-[100px] flex items-center justify-center">
+      <h1 class="text-gray-400 text-align-center font-golos">
+        Выпусканая квалификационная работа для проведения врачебных консультаций в режиме онлайн
+      </h1>
+    </footer>
+
+    <AuthModal v-model:isModalOpen="isModalOpen" />
   </div>
 </template>
 
