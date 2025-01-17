@@ -33,7 +33,7 @@ import {
         <CarouselItem
           v-for="(_, index) in 12"
           :key="index"
-          class="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-[190px] 2xl:basis-1/5 flex"
+          class="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-[200px] 2xl:basis-1/5 flex"
         >
           <div class="pr-14 flex">
             <CardsPopular />

@@ -5,22 +5,38 @@ import { Button } from './components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ref } from 'vue'
 import AuthModal from '@/components/AuthModal.vue'
+import { useRouter } from 'vue-router'
 
 const isAuth = ref(false)
 const isModalProfile = ref(false)
-const isModalOpen = ref(false) // Управление модальным окном
+const isModalOpen = ref(false) // модальное окно для авторизации
+
+const router = useRouter()
+
+const goToProfile = () => {
+  router.push({ name: 'profile' })
+}
 </script>
 
 <template>
   <div class="flex flex-col min-h-screen">
-    <header class="flex flex-wrap items-center justify-between h-[146px] ml-[68px] mr-[68px]">
+    <header
+      class="flex flex-wrap items-center justify-between h-[146px] ml-[68px] mr-[68px] max-sm:mr-1 max-sm:ml-1 max-sm:justify-start max-sm:gap-4"
+    >
       <div class="flex flex-wrap items-center gap-[5px]">
         <HeartPulse size="40" color="#F472B6" />
-        <h1 class="text-3xl font-golos leading-9 font-semibold">Твоё здоровье</h1>
+        <h1
+          class="text-3xl font-golos leading-9 font-semibold sm:text-3xl lg:text-4xl sm:leading-9 lg:leading-10"
+        >
+          Твоё здоровье
+        </h1>
       </div>
 
       <div v-if="isAuth" class="mt-2 flex flex-wrap items-center gap-[5px]">
-        <div class="flex flex-wrap items-center gap-[5px] hover:text-[#F472B6] hover:delay-50">
+        <div
+          @click="goToProfile"
+          class="flex flex-wrap items-center gap-[5px] hover:text-[#F472B6] hover:delay-50"
+        >
           <IdCard class="cursor-pointer" size="40" stroke-width="1" />
           <p class="text-base leading-6 font-normal mr-[6px] cursor-pointer font-golos">Профиль</p>
         </div>
@@ -52,7 +68,7 @@ const isModalOpen = ref(false) // Управление модальным окн
 
       <div v-else class="mt-2">
         <Button @click="isModalOpen = true" variant="outline">
-          <span class="underline text-base leading-8 font-light font-golos">Войти</span>
+          <span class="text-base leading-8 font-light font-golos">Войти</span>
         </Button>
       </div>
     </header>
