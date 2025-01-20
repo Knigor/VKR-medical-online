@@ -1,5 +1,5 @@
 <script setup>
-import { RouterView } from 'vue-router'
+import { RouterLink, RouterView } from 'vue-router'
 import { HeartPulse, IdCard } from 'lucide-vue-next'
 import { Button } from './components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -25,11 +25,13 @@ const goToProfile = () => {
     >
       <div class="flex flex-wrap items-center gap-[5px]">
         <HeartPulse size="40" color="#F472B6" />
-        <h1
-          class="text-3xl font-golos leading-9 font-semibold sm:text-3xl lg:text-4xl sm:leading-9 lg:leading-10"
-        >
-          Твоё здоровье
-        </h1>
+        <RouterLink to="/">
+          <h1
+            class="text-3xl font-golos leading-9 font-semibold sm:text-3xl lg:text-4xl sm:leading-9 lg:leading-10"
+          >
+            Твоё здоровье
+          </h1>
+        </RouterLink>
       </div>
 
       <div v-if="isAuth" class="mt-2 flex flex-wrap items-center gap-[5px]">
@@ -75,7 +77,7 @@ const goToProfile = () => {
     <hr class="max-sm:mt-[20px]" />
     <RouterView />
     <footer class="h-[100px] flex items-center justify-center">
-      <h1 class="text-gray-400 text-align-center font-golos">
+      <h1 class="text-gray-400 text-align-center font-golos max-sm:ml-4">
         Выпусканая квалификационная работа для проведения врачебных консультаций в режиме онлайн
       </h1>
     </footer>

@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ErrorPage from '@/components/ErrorPage.vue'
 import ProfileView from '@/views/ProfileView.vue'
+import ProfileMed from '@/components/ProfileMed.vue'
+import HelpUs from '@/components/HelpUs.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,6 +17,18 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfileView,
+      children: [
+        {
+          path: 'settings',
+          name: 'settings',
+          component: ProfileMed,
+        },
+        {
+          path: 'help',
+          name: 'help',
+          component: HelpUs,
+        },
+      ],
     },
     {
       path: '/:catchAll(.*)',

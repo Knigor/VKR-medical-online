@@ -85,12 +85,12 @@
                   default-value="default"
                 >
                   <div class="flex items-center space-x-2">
-                    <RadioGroupItem id="r1" value="default" />
-                    <Label class="font-golos" for="r1">Мужской</Label>
+                    <RadioGroupItem id="r3" value="default" />
+                    <Label class="font-golos" for="r3">Мужской</Label>
                   </div>
                   <div class="flex items-center space-x-2">
-                    <RadioGroupItem id="r2" value="comfortable" />
-                    <Label class="font-golos" for="r2">Женский</Label>
+                    <RadioGroupItem id="r4" value="comfortable" />
+                    <Label class="font-golos" for="r4">Женский</Label>
                   </div>
                 </RadioGroup>
               </div>
@@ -188,7 +188,12 @@
             </div>
             <div class="grid w-full max-w-sm items-center gap-3">
               <Label class="font-golos" for="password">Введите пароль</Label>
-              <Input class="font-golos" id="password" type="password" placeholder="••••••••" />
+              <Input
+                class="font-golos placeholder-gray-300"
+                id="password"
+                type="password"
+                placeholder="••••••••"
+              />
             </div>
 
             <!-- <div class="flex justify-between">
