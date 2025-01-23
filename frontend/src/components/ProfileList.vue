@@ -1,15 +1,9 @@
 <template>
-  <div class="flex flex-wrap gap-[53px] items-center mr-[53px] max-xl:ml-[53px] max-xl:mt-[24px]">
-    <ScrollArea v-if="isFavorite" class="h-[230px] w-[704px] rounded-md p-4 mt-[50px]">
-      <FavoriteCardsDoctor />
-      <FavoriteCardsDoctor />
-      <FavoriteCardsDoctor />
-      <FavoriteCardsDoctor />
-    </ScrollArea>
-
+  <div class="flex flex-wrap items-center mr-[53px] max-xl:ml-[53px] max-xl:mt-[24px]">
+    <FavoriteCardsDoctor v-if="isFavorite" />
     <div
       v-else
-      class="flex flex-wrap gap-[53px] items-center mr-[53px] max-xl:ml-[53px] max-xl:mt-[24px]"
+      class="flex flex-wrap gap-[53px] items-center mt-[143px] max-xl:ml-[53px] max-xl:mt-[24px]"
     >
       <div class="flex relative items-center">
         <Avatar class="h-[80px] w-[80px] relative left-3 -z-10">
@@ -39,9 +33,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ref } from 'vue'
 import FavoriteCardsDoctor from './FavoriteCardsDoctor.vue'
-import { ScrollArea } from '@/components/ui/scroll-area'
 
-const isFavorite = ref(true)
+const isFavorite = ref(false)
 </script>
 
 <style lang="scss" scoped></style>

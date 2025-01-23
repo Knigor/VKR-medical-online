@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-nowrap justify-between items-center">
+  <div class="flex items-start gap-[140px]">
     <div class="flex flex-col mt-[80px] ml-[88px] max-sm:ml-4">
       <h1 class="text-3xl leading-9 font-bold font-golos">Профиль</h1>
       <div class="flex flex-col gap-[34px] mt-[34px]">
@@ -47,6 +47,7 @@
             class="h-[24px] w-[3px] bg-pink-400"
           ></div>
           <RouterLink
+            :style="{ color: route.path.slice(-4) === 'help' ? activeColor : '' }"
             class="font-golos text-base leading-6 font-medium hover:text-pink-400"
             to="/profile/help"
           >

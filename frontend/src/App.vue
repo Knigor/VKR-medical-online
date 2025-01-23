@@ -6,8 +6,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ref } from 'vue'
 import AuthModal from '@/components/AuthModal.vue'
 import { useRouter } from 'vue-router'
+import { useToast } from 'vue-toastification'
+const toast = useToast()
 
-const isAuth = ref(false)
+const logOut = () => {
+  isAuth.value = false
+  toast.success('Hello world!')
+}
+
+const isAuth = ref(true)
 const isModalProfile = ref(false)
 const isModalOpen = ref(false) // модальное окно для авторизации
 
@@ -59,7 +66,7 @@ const goToProfile = () => {
             </p>
             <hr class="w-[187px]" />
             <p
-              @click="isAuth = false"
+              @click="logOut"
               class="mb-[11px] mt-[11px] text-base leading-6 font-light text-black cursor-pointer w-[49px] hover:text-[#F472B6] font-golos"
             >
               Выйти
