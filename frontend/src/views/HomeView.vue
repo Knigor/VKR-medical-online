@@ -8,6 +8,76 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel'
+
+import { ref } from 'vue'
+
+const specialistList = ref([
+  {
+    id: 1,
+    description: 'По записи',
+    specialization: 'Терапевт',
+  },
+  {
+    id: 2,
+    description: 'По записи',
+    specialization: 'Педиатор',
+  },
+  {
+    id: 3,
+    description: 'По записи',
+    specialization: 'Дерматолог',
+  },
+  {
+    id: 4,
+    description: 'По записи',
+    specialization: 'Психолог',
+  },
+  {
+    id: 5,
+    description: 'По записи',
+    specialization: 'Гинеколог',
+  },
+  {
+    id: 6,
+    description: 'По записи',
+    specialization: 'Кардиолог',
+  },
+])
+
+const popularList = ref([
+  {
+    id: 1,
+    textPopular: 'Боль в горле',
+  },
+  {
+    id: 2,
+    textPopular: 'Последствие травм',
+  },
+  {
+    id: 3,
+    textPopular: 'Простуда',
+  },
+  {
+    id: 4,
+    textPopular: 'Отношения с партнером',
+  },
+  {
+    id: 5,
+    textPopular: 'Боль в суставах',
+  },
+  {
+    id: 6,
+    textPopular: 'Аллергия',
+  },
+  {
+    id: 7,
+    textPopular: 'Сексуальная жизнь',
+  },
+  {
+    id: 8,
+    textPopular: 'Проблемы с сердцем',
+  },
+])
 </script>
 
 <template>
@@ -31,12 +101,12 @@ import {
     >
       <CarouselContent>
         <CarouselItem
-          v-for="(_, index) in 12"
-          :key="index"
+          v-for="popular in popularList"
+          :key="popular.id"
           class="sm:basis-1/3 md:basis-1/4 lg:basis-[200px] flex"
         >
           <div class="pr-14 flex">
-            <CardsPopular />
+            <CardsPopular :popular-text="popular.textPopular" />
           </div>
         </CarouselItem>
       </CarouselContent>
@@ -57,14 +127,12 @@ import {
     <div
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-[46px] mt-4 sm:mt-6 lg:mt-[43px] mb-8 sm:mb-12 lg:mb-[80px]"
     >
-      <CardsDoctor />
-      <CardsDoctor />
-      <CardsDoctor />
-      <CardsDoctor />
-      <CardsDoctor />
-      <CardsDoctor />
-      <CardsDoctor />
-      <CardsDoctor />
+      <CardsDoctor
+        v-for="specialist in specialistList"
+        :key="specialist.id"
+        :name-specialist="specialist.specialization"
+        :description="specialist.description"
+      />
     </div>
   </div>
 </template>

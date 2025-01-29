@@ -38,7 +38,14 @@
     <div class="flex flex-nowrap gap-[40px] mt-[12px]">
       <div class="grid items-center w-[260px] gap-3 mt-4">
         <Label class="font-golos" for="number">Телефон</Label>
-        <Input class="font-golos" id="number" type="number" placeholder="+7 (XXX) XXX-XX-XX" />
+        <Input
+          class="font-golos"
+          id="number"
+          type="text"
+          v-model="formattedPhone"
+          placeholder="+7 (XXX) XXX-XX-XX"
+          @input="handleInput"
+        />
       </div>
       <div class="grid items-center w-[260px] gap-3 mt-4">
         <Label class="font-golos" for="email">Email</Label>
@@ -60,8 +67,7 @@
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
     </div>
-
-    <Button variant="outline" :disabled="false" type="submit" class="font-golos w-full mt-[56px]">
+    <Button variant="outline" :disabled="false" type="submit" class="font-golos w-full mt-[26px]">
       <Contact class="w-4 h-4 mr-2" /> Сохранить изменения
     </Button>
   </div>
@@ -76,6 +82,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+
+const formattedPhone = ref('') // Хранит отформатированный номер
 </script>
 
 <style lang="scss" scoped></style>
