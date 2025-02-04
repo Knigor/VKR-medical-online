@@ -4,6 +4,7 @@ import ErrorPage from '@/components/ErrorPage.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import ProfileMed from '@/components/ProfileMed.vue'
 import HelpUs from '@/components/HelpUs.vue'
+import OnlineConsultation from '@/views/OnlineConsultation.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,6 +13,11 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+    },
+    {
+      path: '/online/:id',
+      name: 'online',
+      component: OnlineConsultation,
     },
     {
       path: '/profile',

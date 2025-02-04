@@ -130,6 +130,7 @@ const popularList = ref([
       <CardsDoctor
         v-for="specialist in specialistList"
         :key="specialist.id"
+        :id="specialist.id"
         :name-specialist="specialist.specialization"
         :description="specialist.description"
       />
