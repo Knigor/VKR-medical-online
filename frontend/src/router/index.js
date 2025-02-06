@@ -5,6 +5,7 @@ import ProfileView from '@/views/ProfileView.vue'
 import ProfileMed from '@/components/ProfileMed.vue'
 import HelpUs from '@/components/HelpUs.vue'
 import OnlineConsultation from '@/views/OnlineConsultation.vue'
+import DoctorPersonal from '@/views/DoctorPersonal.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,10 +15,16 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
+
     {
       path: '/online/:id',
       name: 'online',
       component: OnlineConsultation,
+    },
+    {
+      path: '/online/:id/:idPersonal',
+      name: 'doctorPersonal',
+      component: DoctorPersonal,
     },
     {
       path: '/profile',

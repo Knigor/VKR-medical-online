@@ -136,8 +136,12 @@
                   <p class="text-sm font-golos text-gray-500">{{ specialization }}</p>
                 </div>
                 <div class="mt-2">
-                  <p class="text-sm font-golos text-gray-500">Дата: {{ selectedDate }}</p>
-                  <p class="text-sm font-golos text-gray-500">Время: {{ selectedTimeSlot }}</p>
+                  <p class="text-sm font-golos text-gray-500">
+                    <span class="text-sm font-golos text-black">Дата:</span> {{ selectedDate }}
+                  </p>
+                  <p class="text-sm font-golos text-gray-500">
+                    <span class="text-sm font-golos text-black">Время:</span>{{ selectedTimeSlot }}
+                  </p>
                 </div>
 
                 <div class="mt-4 flex gap-4">
