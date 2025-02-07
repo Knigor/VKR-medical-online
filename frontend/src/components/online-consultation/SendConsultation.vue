@@ -7,32 +7,40 @@
         >Запись по местному времени</span
       >
     </div>
-    <div class="flex flex-wrap gap-2 mt-4">
-      <Button
-        v-for="(date, index) in dateConsultation.slice(0, 3)"
-        :key="date.id"
-        @click="index === 2 ? (showModal = true) : selectDate(date)"
-        variant="outline"
-        class="rounded-full"
-        :class="
-          selectedDateId === date.id
-            ? 'bg-pink-300 border-pink-300 text-white hover:bg-pink-300 hover:text-white'
-            : ''
-        "
-      >
-        {{ index === 2 ? 'Другой день' : date.day }}
-      </Button>
+    <div v-if="!isChat">
+      <div class="flex flex-wrap gap-2 mt-4">
+        <Button
+          v-for="(date, index) in dateConsultation.slice(0, 3)"
+          :key="date.id"
+          @click="index === 2 ? (showModal = true) : selectDate(date)"
+          variant="outline"
+          class="rounded-full"
+          :class="
+            selectedDateId === date.id
+              ? 'bg-pink-300 border-pink-300 text-white hover:bg-pink-300 hover:text-white'
+              : ''
+          "
+        >
+          {{ index === 2 ? 'Другой день' : date.day }}
+        </Button>
+      </div>
+      <div class="flex flex-wrap gap-4 mt-4 mb-4 max-w-[400px]" v-if="selectedTime.length">
+        <Button
+          variant="outline"
+          class="rounded-2xl hover:bg-pink-300 hover:text-white hover:border-pink-300"
+          v-for="t in selectedTime"
+          :key="t"
+          @click="selectTime(t, selectedDate)"
+          >{{ t }}</Button
+        >
+      </div>
     </div>
-    <div class="flex flex-wrap gap-4 mt-4 mb-4 max-w-[400px]" v-if="selectedTime.length">
-      <Button
-        variant="outline"
-        class="rounded-2xl hover:bg-pink-300 hover:text-white hover:border-pink-300"
-        v-for="t in selectedTime"
-        :key="t"
-        @click="selectTime(t, selectedDate)"
-        >{{ t }}</Button
-      >
-    </div>
+    <Button
+      @click="router.push(`/chat/${1}`)"
+      class="mt-4 bg-pink-300 hover:bg-pink-400 rounded-2xl"
+      v-else
+      >Перейти в чат</Button
+    >
 
     <!-- Модалка для другого времени-->
     <TransitionRoot appear :show="showModal" as="template">
@@ -155,7 +163,7 @@
                   <button
                     type="button"
                     class="inline-flex justify-center rounded-md border border-transparent bg-pink-300 px-4 py-2 text-sm font-medium text-white hover:bg-pink-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                    @click="closeModalSend"
+                    @click="sendModalChat"
                   >
                     Записаться
                   </button>
@@ -174,6 +182,9 @@ import { ref, onMounted } from 'vue'
 import { ShieldAlert } from 'lucide-vue-next'
 import Button from '../ui/button/Button.vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 defineProps({
   name: String,
@@ -199,6 +210,13 @@ const closeModalSend = () => {
   sendModal.value = false
   selectedDateId.value = null
   selectDate(dateConsultation.value[0])
+}
+
+const isChat = ref(false)
+
+const sendModalChat = () => {
+  sendModal.value = false
+  isChat.value = true
 }
 
 const closeModal = () => {

@@ -6,6 +6,7 @@ import ProfileMed from '@/components/ProfileMed.vue'
 import HelpUs from '@/components/HelpUs.vue'
 import OnlineConsultation from '@/views/OnlineConsultation.vue'
 import DoctorPersonal from '@/views/DoctorPersonal.vue'
+import ChatWithDoctor from '@/views/ChatWithDoctor.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,6 +26,11 @@ const router = createRouter({
       path: '/online/:id/:idPersonal',
       name: 'doctorPersonal',
       component: DoctorPersonal,
+    },
+    {
+      path: '/chat/:idChat',
+      name: 'chat',
+      component: ChatWithDoctor,
     },
     {
       path: '/profile',

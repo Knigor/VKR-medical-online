@@ -2,15 +2,14 @@
   <div class="flex flex-col ml-24 mt-[32px] mr-24">
     <Button class="w-[50px] h-6 flex flex-wrap mb-6" @click="goBack" variant="link">Назад</Button>
     <div class="flex flex-wrap gap-4">
-      <div class="flex flex-col gap-6">
-        <div class="flex">
-          <CardsMainDoctor />
-        </div>
-
+      <div class="flex flex-col gap-4">
+        <CardsMainDoctor />
         <ExperienceDoctor />
         <EducationDoctor />
       </div>
-      <SendOnlineConsultation />
+      <div>
+        <SendOnlineConsultation />
+      </div>
     </div>
   </div>
 </template>
@@ -26,7 +25,7 @@ import SendOnlineConsultation from '@/components/personal-doctor/SendOnlineConsu
 
 const router = useRouter()
 const goBack = () => {
-  router.back()
+  router.go(-1)
 }
 const doctorStore = usePersonalDoctorStore()
 
