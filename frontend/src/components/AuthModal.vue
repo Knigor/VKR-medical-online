@@ -41,7 +41,7 @@
         </div>
         <!-- Modal body -->
         <div class="p-4 md:p-5">
-          <form class="space-y-4" action="#">
+          <form class="space-y-4">
             <div class="grid w-full max-w-sm items-center gap-3">
               <Label class="font-golos" for="email">Введите ваш email</Label>
               <Input class="font-golos" id="email" type="email" placeholder="aboba@mail.ru" />
@@ -181,18 +181,25 @@
         </div>
         <!-- Modal body -->
         <div class="p-4 md:p-5">
-          <form class="space-y-4" action="#">
+          <form class="space-y-4" @submit.prevent="handleLogin">
             <div class="grid w-full max-w-sm items-center gap-3">
-              <Label class="font-golos" for="email">Введите ваш email</Label>
-              <Input class="font-golos" id="email" type="email" placeholder="aboba@mail.ru" />
+              <Label class="font-golos" for="username">Введите ваш логин</Label>
+              <Input
+                v-model="username"
+                class="font-golos"
+                id="username"
+                type="username"
+                placeholder="Введите ваш логин"
+              />
             </div>
             <div class="grid w-full max-w-sm items-center gap-3">
               <Label class="font-golos" for="password">Введите пароль</Label>
               <Input
+                v-model="password"
                 class="font-golos placeholder-gray-300"
                 id="password"
                 type="password"
-                placeholder="••••••••"
+                placeholder="Введите ваш пароль"
               />
             </div>
 
@@ -248,14 +255,21 @@ import { Input } from '@/components/ui/input'
 
 const registerModalOpen = ref(false)
 
+const username = defineModel('username')
+const password = defineModel('password')
+
 defineProps({
   isModalOpen: Boolean,
 })
 
-const emit = defineEmits(['update:isModalOpen'])
+const emit = defineEmits(['update:isModalOpen', 'login'])
 
 const closeModal = () => {
   emit('update:isModalOpen', false)
+}
+
+const handleLogin = () => {
+  emit('login', { username: username.value, password: password.value })
 }
 </script>
 

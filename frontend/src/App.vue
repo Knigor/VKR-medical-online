@@ -6,19 +6,33 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ref } from 'vue'
 import AuthModal from '@/components/AuthModal.vue'
 import { useRouter } from 'vue-router'
-import { useToast } from 'vue-toastification'
-const toast = useToast()
+import { useAuthStore } from './stores/authStore'
+import { useAuth } from './composables/auth/useAuth'
 
-const logOut = () => {
-  isAuth.value = false
-  toast.success('Hello world!')
-}
-
-const isAuth = ref(true)
+const authStore = useAuthStore()
+const { logout, login } = useAuth()
 const isModalProfile = ref(false)
 const isModalOpen = ref(false) // модальное окно для авторизации
 
 const router = useRouter()
+
+const username = ref('')
+const password = ref('')
+
+const handleLogin = async (body) => {
+  try {
+    await login(body)
+    isModalOpen.value = false
+    username.value = ''
+    password.value = ''
+  } catch (error) {
+    console.error(error, 'абоба')
+  }
+}
+
+const handleLogOut = () => {
+  logout()
+}
 
 const goToProfile = () => {
   router.push({ name: 'profile' })
@@ -41,7 +55,7 @@ const goToProfile = () => {
         </RouterLink>
       </div>
 
-      <div v-if="isAuth" class="mt-2 flex flex-wrap items-center gap-[5px]">
+      <div v-if="authStore.id !== null" class="mt-2 flex flex-wrap items-center gap-[5px]">
         <div
           @click="goToProfile"
           class="flex flex-wrap items-center gap-[5px] hover:text-[#F472B6] hover:delay-50"
@@ -66,7 +80,7 @@ const goToProfile = () => {
             </p>
             <hr class="w-[187px]" />
             <p
-              @click="logOut"
+              @click="handleLogOut"
               class="mb-[11px] mt-[11px] text-base leading-6 font-light text-black cursor-pointer w-[49px] hover:text-[#F472B6] font-golos"
             >
               Выйти
@@ -76,7 +90,7 @@ const goToProfile = () => {
       </div>
 
       <div v-else class="mt-2">
-        <Button @click="isModalOpen = true" variant="outline">
+        <Button @click="isModalOpen = !isModalOpen" variant="outline">
           <span class="text-base leading-8 font-light font-golos">Войти</span>
         </Button>
       </div>
@@ -89,7 +103,12 @@ const goToProfile = () => {
       </h1>
     </footer>
 
-    <AuthModal v-model:isModalOpen="isModalOpen" />
+    <AuthModal
+      v-model:password="password"
+      v-model:username="username"
+      @login="handleLogin"
+      v-model:isModalOpen="isModalOpen"
+    />
   </div>
 </template>
 
