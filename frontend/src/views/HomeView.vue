@@ -12,8 +12,10 @@ import {
 import Button from '@/components/ui/button/Button.vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/authStore'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 const specialistList = ref([
   {
@@ -87,7 +89,7 @@ const popularList = ref([
 <template>
   <div class="flex flex-col ml-4 sm:ml-8 lg:ml-[68px] mt-4 sm:mt-8 lg:mt-[68px]">
     <!-- true для обычного пользователя, false для доктора -->
-    <div v-if="false">
+    <div v-if="authStore.doctorId === null">
       <h1
         class="text-2xl sm:text-3xl lg:text-4xl font-golos leading-8 sm:leading-9 lg:leading-10 font-bold"
       >

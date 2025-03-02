@@ -4,14 +4,16 @@ export default async function protectedAPI(url, method = 'GET', body = null) {
   const authStore = useAuthStore()
   const token = authStore.accessToken
 
+  const isFormData = body instanceof FormData
+
   const headers = {
-    'Content-Type': 'application/json',
     Authorization: `Bearer ${token}`,
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
   }
 
   const options = { method, headers }
   if (body) {
-    options.body = JSON.stringify(body)
+    options.body = isFormData ? body : JSON.stringify(body)
   }
 
   try {

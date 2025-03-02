@@ -11,21 +11,27 @@ export const useAuthStore = defineStore('auth', {
     gender: null,
     doctorId: null,
     patientId: null,
+    birthdate: null,
+    photo_user: null,
   }),
   actions: {
     setAccessToken(token) {
       this.accessToken = token
     },
+
     setPersonalData(data) {
-      this.fio = data.fio
       this.id = data.id
+      this.fio = data.fio
       this.email = data.email
       this.userName = data.userName
       this.role = data.role
       this.gender = data.gender
-      this.doctorId = data.doctorId
+      this.birthdate = data.birthdate
+      this.photo_user = data.photo_user
       this.patientId = data.patientId
+      this.doctorId = data.doctorId
     },
+
     clearPersonalData() {
       this.fio = null
       this.id = null
@@ -35,7 +41,9 @@ export const useAuthStore = defineStore('auth', {
       this.gender = null
       this.doctorId = null
       this.patientId = null
+      this.birthdate = null
+      this.photo_user = null
     },
   },
-  getters: {},
+  persist: true,
 })

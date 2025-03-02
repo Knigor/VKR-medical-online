@@ -55,7 +55,9 @@
           >
         </div>
       </div>
-      <Button class="bg-pink-400 font-golos mt-[34px]">Выбрать специалиста</Button>
+      <Button @click="router.push('/')" class="bg-pink-400 font-golos mt-[34px]"
+        >Выбрать специалиста</Button
+      >
     </div>
     <Profilelist v-if="route.path.slice(-7) === 'profile'" />
     <RouterView />
@@ -65,13 +67,14 @@
 <script setup>
 import { Button } from '@/components/ui/button'
 import { RouterView, RouterLink } from 'vue-router'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ref } from 'vue'
 import Profilelist from '@/components/Profilelist.vue'
 
 const activeColor = ref('#F472B6')
 
 const route = useRoute()
+const router = useRouter()
 </script>
 
 <style lang="scss" scoped></style>

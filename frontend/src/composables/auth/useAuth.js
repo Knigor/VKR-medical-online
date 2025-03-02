@@ -20,6 +20,8 @@ export function useAuth() {
         gender: data.gender,
         doctorId: data.doctorId,
         patientId: data.patientId,
+        birthdate: data.birthdate,
+        photo_user: data.photo_user,
       })
     } catch (error) {
       console.error('Ошибка авторизации:', error)
@@ -27,15 +29,14 @@ export function useAuth() {
     }
   }
 
-  // async function refreshToken() {
-  //   try {
-  //     const data = await protectedAPI('/auth/refresh', 'POST')
-  //     authStore.setAccessToken(data.access_token)
-  //   } catch (error) {
-  //     console.error('Ошибка обновления токена:', error)
-  //     logout()
-  //   }
-  // }
+  async function register(credentials) {
+    try {
+      await publicAPI('/api/register', 'POST', credentials)
+    } catch (error) {
+      console.error('Ошибка регистрации:', error)
+      throw error
+    }
+  }
 
   function logout() {
     authStore.setAccessToken(null)
@@ -43,5 +44,5 @@ export function useAuth() {
     router.push('/')
   }
 
-  return { login, logout }
+  return { login, logout, register }
 }

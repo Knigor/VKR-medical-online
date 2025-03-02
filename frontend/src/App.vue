@@ -10,16 +10,21 @@ import { useAuthStore } from './stores/authStore'
 import { useAuth } from './composables/auth/useAuth'
 
 const authStore = useAuthStore()
-const { logout, login } = useAuth()
+const { logout, login, register } = useAuth()
 const isModalProfile = ref(false)
 const isModalOpen = ref(false) // модальное окно для авторизации
-
+const isError = ref(false)
 const router = useRouter()
+const registerModalOpen = ref(false)
 
+// авторизация
 const username = ref('')
 const password = ref('')
+const isLoading = ref(false)
 
 const handleLogin = async (body) => {
+  isLoading.value = true
+  isError.value = false
   try {
     await login(body)
     isModalOpen.value = false
@@ -27,6 +32,39 @@ const handleLogin = async (body) => {
     password.value = ''
   } catch (error) {
     console.error(error, 'абоба')
+    isError.value = true
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// регистрация
+
+const passwordRegister = ref('')
+const usernameRegister = ref('')
+const emailRegister = ref('')
+const selectedRole = ref('')
+const selectedGender = ref('')
+const fio = ref('')
+const isLoadingRegister = ref(false)
+
+const handleRegister = async (body) => {
+  isLoadingRegister.value = true
+  isError.value = false
+  try {
+    await register(body)
+    usernameRegister.value = ''
+    passwordRegister.value = ''
+    emailRegister.value = ''
+    selectedRole.value = ''
+    selectedGender.value = ''
+    fio.value = ''
+    registerModalOpen.value = false
+  } catch (error) {
+    console.error(error, 'абоба')
+    isError.value = true
+  } finally {
+    isLoadingRegister.value = false
   }
 }
 
@@ -74,9 +112,9 @@ const goToProfile = () => {
         >
           <div class="flex flex-col ml-[23px] mt-[12px]">
             <p
-              class="text-lg leading-7 font-normal text-black mb-[5px] cursor-pointer w-[53px] hover:text-[#F472B6] font-golos"
+              class="text-lg leading-7 font-normal text-black mb-[5px] cursor-pointer hover:text-[#F472B6] font-golos"
             >
-              Егор
+              {{ authStore.fio.split(' ')[0] }} {{ authStore.fio.split(' ')[1] }}
             </p>
             <hr class="w-[187px]" />
             <p
@@ -104,10 +142,21 @@ const goToProfile = () => {
     </footer>
 
     <AuthModal
+      v-model:is-loading="isLoading"
       v-model:password="password"
       v-model:username="username"
+      v-model:selectedGender="selectedGender"
+      v-model:selectedRole="selectedRole"
+      v-model:fio="fio"
+      v-model:passwordRegister="passwordRegister"
+      v-model:usernameRegister="usernameRegister"
+      v-model:emailRegister="emailRegister"
+      v-model:isLoadingRegister="isLoadingRegister"
       @login="handleLogin"
+      @register="handleRegister"
+      v-model:registerModalOpen="registerModalOpen"
       v-model:isModalOpen="isModalOpen"
+      v-model:isError="isError"
     />
   </div>
 </template>

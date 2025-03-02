@@ -52,7 +52,9 @@ class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler
             'role' => $user->getRoles(),
             'gender' => $user->getGender(),
             'doctorId' => $doctor ? $doctor->getDoctorId() : null,
-            'patientId' => $patient ? $patient->getPatientId() : null
+            'patientId' => $patient ? $patient->getPatientId() : null,
+            'birthdate' => $user->getBirthdate()->format('Y-m-d'),
+            'photo_user' => $user->getPhotoUser(),
         ];
 
         // Возвращаем кастомный JSON ответ

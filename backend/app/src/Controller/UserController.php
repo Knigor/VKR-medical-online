@@ -5,6 +5,8 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Service\FileUploader;
+use App\Entity\Doctor;
+use App\Entity\Patient;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,6 +38,10 @@ class UserController extends AbstractController
 
         // Массив для отслеживания обновленных полей
         $updatedFields = [];
+
+        
+        $doctor = $em->getRepository(Doctor::class)->findOneBy(['user' => $user]);
+        $patient = $em->getRepository(Patient::class)->findOneBy(['user' => $user]);
 
         // Обрабатываем другие данные
         if ($fio = $request->request->get('fio')) {
@@ -83,6 +89,8 @@ class UserController extends AbstractController
             'role' => $user->getRoles(),
             'gender' => $user->getGender(),
             'birthdate' => $user->getBirthdate()->format('Y-m-d'),
+            'doctorId' => $doctor ? $doctor->getDoctorId() : null,
+            'patientId' => $patient ? $patient->getPatientId() : null,
             'photo_user' => $user->getPhotoUser(),
             'updated_fields' => $updatedFields,  // Включаем обновленные поля
         ];
