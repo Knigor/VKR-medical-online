@@ -45,5 +45,11 @@ export const useAuthStore = defineStore('auth', {
       this.photo_user = null
     },
   },
+  getters: {
+    foto_url: (state) => {
+      const baseUrl = import.meta.env.VITE_BASE_URL || 'http://localhost:8080'
+      return state.photo_user ? `${baseUrl}${state.photo_user}` : '/default-avatar.png'
+    },
+  },
   persist: true,
 })

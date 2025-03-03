@@ -1,6 +1,6 @@
 <?php
 
-// src/Controller/PatientController.php
+
 namespace App\Controller;
 
 use App\Entity\Patient;
@@ -54,7 +54,6 @@ class PatientController extends AbstractController
             $updatedFields['chronic_conditions'] = $chronicConditions;
         }
 
-
         // Сохраняем изменения
         $em->flush();
 
@@ -70,5 +69,42 @@ class PatientController extends AbstractController
         ];
 
         return new JsonResponse(['status' => 'Patient updated successfully', 'data' => $patientData], 200);
+    }
+
+    #[Route('/api/patient', name: 'get_patient', methods: ['GET'])]
+    public function getPatient(
+        Request $request, // Добавляем Request для работы с query-параметрами
+        EntityManagerInterface $em
+    ): JsonResponse {
+        // Получаем userId и patientId из query-параметров
+        $userId = $request->query->get('userId');
+        $patientId = $request->query->get('patientId');
+    
+        // Проверяем, что оба параметра переданы
+        if (!$userId || !$patientId) {
+            return new JsonResponse(['error' => 'userId and patientId are required.'], 400);
+        }
+    
+        // Ищем пациента по userID и patientID
+        $patient = $em->getRepository(Patient::class)->findOneBy([
+            'patientId' => $patientId,
+            'user' => $userId,
+        ]);
+    
+        if (!$patient) {
+            throw new NotFoundHttpException('Patient not found.');
+        }
+    
+        // Возвращаем данные пациента
+        $patientData = [
+            'id' => $patient->getPatientId(),
+            'policy_number' => $patient->getPolicyNumber(),
+            'blood_type' => $patient->getBloodType(),
+            'allergies' => $patient->getAllergies(),
+            'chronic_conditions' => $patient->getChronicConditions(),
+            'user_id' => $patient->getUser()->getUserId(),
+        ];
+    
+        return new JsonResponse(['status' => 'Patient retrieved successfully', 'data' => $patientData], 200);
     }
 }

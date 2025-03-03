@@ -40,7 +40,7 @@
     <div class="flex flex-nowrap gap-[40px] mt-[12px]">
       <div v-if="authStore.patientId" class="grid items-center w-[260px] gap-3 mt-4">
         <Label class="font-golos" for="text">Личная карточка пациента</Label>
-        <Button type="button" @click="openModal">Открыть</Button>
+        <Button class="bg-pink-400" type="button" @click="openModal">Открыть</Button>
 
         <!-- Модалочка -->
         <TransitionRoot appear :show="isOpen" as="template">
@@ -72,22 +72,31 @@
                     class="w-full max-w-[800px] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
                   >
                     <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
-                      Payment successful
+                      Личная карточка пациента
                     </DialogTitle>
                     <div class="mt-2">
-                      <p class="text-sm text-gray-500">
-                        Your payment has been successfully submitted. We’ve sent you an email with
-                        all of the details of your order.
-                      </p>
+                      <PacientCard
+                        v-model:policeNumber="policeNumber"
+                        v-model:allergies="allergies"
+                        v-model:chronicDiseases="chronicDiseases"
+                        @select-person="handleSelectedPerson"
+                      />
                     </div>
 
-                    <div class="mt-4">
+                    <div class="mt-4 flex gap-2.5">
                       <button
                         type="button"
-                        class="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        class="inline-flex justify-center rounded-md border border-transparent bg-pink-400 px-4 py-2 text-sm font-medium text-white hover:bg-pink-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        @click="handleEditCardPatient"
+                      >
+                        Сохранить
+                      </button>
+                      <button
+                        type="button"
+                        class="inline-flex justify-center rounded-md border border-transparent bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                         @click="closeModal"
                       >
-                        Got it, thanks!
+                        Закрыть
                       </button>
                     </div>
                   </DialogPanel>
@@ -100,7 +109,7 @@
 
       <div v-else class="grid items-center w-[260px] gap-3 mt-4">
         <Label class="font-golos" for="text">Личная информация доктора</Label>
-        <Button>Открыть</Button>
+        <Button class="bg-pink-400">Открыть</Button>
       </div>
 
       <div class="grid items-center w-[260px] gap-3 mt-4">
@@ -118,19 +127,14 @@
     <div class="flex relative items-end justify-between">
       <div class="grid w-[460px] items-center gap-1.5 mt-[12px]">
         <Label for="picture">Фото профиля</Label>
-        <Input
-          @change="handleFileChange"
-          class="mt-1 hover:bg-gray-100 cursor-pointer"
-          id="picture"
-          type="file"
-        />
+        <Input @change="handleFileChange" class="mt-1 hover:bg-gray-100" id="picture" type="file" />
       </div>
 
       <Avatar
         @click="isModalProfile = !isModalProfile"
         class="h-[80px] w-[80px] relative bottom-[-15px]"
       >
-        <AvatarImage src="/icons/avatar-test.svg" alt="@radix-vue" />
+        <AvatarImage :src="filePreview || authStore.foto_url" alt="@radix-vue" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
     </div>
@@ -158,12 +162,15 @@ import { useAuthStore } from '@/stores/authStore'
 import { useProfile } from '@/composables/profile/useProfile'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
 import { useToast } from 'vue-toastification'
-
+import PacientCard from './profile-med/PacientCard.vue'
+import { usePatientCardStore } from '@/stores/patientCardStore'
+import { usePatientCard } from '@/composables/patient-card/usePatientCard'
 const isOpen = ref(false)
 
 const toast = useToast()
 
 const { editProfile } = useProfile()
+const { editPatientCard } = usePatientCard()
 
 function closeModal() {
   isOpen.value = false
@@ -178,11 +185,48 @@ const fio = ref(authStore.fio)
 const selectedGender = ref(authStore.gender)
 const birthdate = ref(authStore.birthdate)
 const file = ref(null)
-
+const filePreview = ref(null)
 const handleFileChange = (event) => {
   const selectedFile = event.target.files[0]
   if (selectedFile) {
     file.value = selectedFile
+    filePreview.value = URL.createObjectURL(selectedFile)
+  }
+}
+
+const patientCardStore = usePatientCardStore()
+
+// карточка пациента
+
+const selectedPerson = ref(patientCardStore.blood_type)
+const allergies = ref(patientCardStore.allergies)
+const chronicDiseases = ref(patientCardStore.chronic_conditions)
+const policeNumber = ref(patientCardStore.policy_number)
+
+const handleSelectedPerson = (person) => {
+  selectedPerson.value = person
+  console.log('Выбранный человек:', selectedPerson.value)
+}
+
+const handleEditCardPatient = async () => {
+  isOpen.value = true
+  try {
+    const formData = new FormData()
+    formData.append('userId', authStore.id)
+    formData.append('patientId', authStore.patientId)
+    formData.append('blood_type', selectedPerson.value)
+    formData.append('allergies', allergies.value)
+    formData.append('chronic_conditions', chronicDiseases.value)
+    formData.append('policy_number', policeNumber.value)
+
+    await editPatientCard(formData)
+
+    isOpen.value = false
+
+    toast.success('Карточка пациента успешно обновлена')
+  } catch (error) {
+    console.error(error)
+    toast.error('Произошла ошибка при обновлении карточки пациента')
   }
 }
 

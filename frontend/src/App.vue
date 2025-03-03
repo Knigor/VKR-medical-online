@@ -3,7 +3,7 @@ import { RouterLink, RouterView } from 'vue-router'
 import { HeartPulse, IdCard } from 'lucide-vue-next'
 import { Button } from './components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import AuthModal from '@/components/AuthModal.vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from './stores/authStore'
@@ -102,7 +102,7 @@ const goToProfile = () => {
           <p class="text-base leading-6 font-normal mr-[6px] cursor-pointer font-golos">Профиль</p>
         </div>
         <Avatar @click="isModalProfile = !isModalProfile" class="cursor-pointer h-[40px] w-[40px]">
-          <AvatarImage src="/icons/avatar-test.svg" alt="@radix-vue" />
+          <AvatarImage :src="authStore.foto_url" alt="@radix-vue" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
 
