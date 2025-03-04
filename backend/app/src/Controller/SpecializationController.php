@@ -83,4 +83,53 @@ class SpecializationController extends AbstractController
             'nameSpecialization' => $specialization->getNameSpecialization(),
         ]], 201);
     }
+
+//     #[Route('/api/specializations/search', name: 'search_specializations', methods: ['GET'])]
+// public function searchSpecializations(Request $request, EntityManagerInterface $em): JsonResponse {
+//     $query = $request->query->get('query');
+    
+//     if (!$query) {
+//         return new JsonResponse(['error' => 'Query parameter is required.'], 400);
+//     }
+
+//     $specializations = $em->getRepository(Specialization::class)
+//         ->createQueryBuilder('s')
+//         ->where('s.nameSpecialization LIKE :query')
+//         ->setParameter('query', "%$query%")
+//         ->getQuery()
+//         ->getResult();
+
+//     $specializationData = [];
+    
+//     foreach ($specializations as $specialization) {
+//         $specializationData[] = [
+//             'nameSpecialization' => $specialization->getNameSpecialization(),
+//             'doctorId' => $specialization->getDoctor() ? $specialization->getDoctor()->getDoctorId() : null,
+//         ];
+//     }
+
+//     return new JsonResponse(['status' => 'success', 'data' => $specializationData], 200);
+// }
+
+    #[Route('/api/specializations/all', name: 'get_all_specializations', methods: ['GET'])]
+    public function getAllSpecializations(EntityManagerInterface $em): JsonResponse {
+        $specializations = $em->getRepository(Specialization::class)->findAll();
+    
+        $uniqueSpecializations = [];
+        
+        foreach ($specializations as $specialization) {
+            $name = $specialization->getNameSpecialization();
+            
+            if (!isset($uniqueSpecializations[$name])) {
+                $uniqueSpecializations[$name] = [
+                    'specializationId' => $specialization->getSpecializationId(),
+                    'nameSpecialization' => $name,
+                    'doctorId' => $specialization->getDoctor() ? $specialization->getDoctor()->getDoctorId() : null,
+                ];
+            }
+        }
+    
+        return new JsonResponse(['status' => 'success', 'data' => array_values($uniqueSpecializations)], 200);
+    }
+
 }

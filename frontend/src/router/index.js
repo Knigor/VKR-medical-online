@@ -8,6 +8,7 @@ import OnlineConsultation from '@/views/OnlineConsultation.vue'
 import DoctorPersonal from '@/views/DoctorPersonal.vue'
 import ChatWithDoctor from '@/views/ChatWithDoctor.vue'
 import DoctorPersonalEdit from '@/views/DoctorPersonalEdit.vue'
+import TestPage from '@/views/TestPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,7 +18,11 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
-
+    {
+      path: '/test',
+      name: 'test',
+      component: TestPage,
+    },
     {
       path: '/online/:id',
       name: 'online',

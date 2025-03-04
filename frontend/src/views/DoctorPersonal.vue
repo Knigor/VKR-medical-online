@@ -15,7 +15,6 @@
 </template>
 
 <script setup>
-import { usePersonalDoctorStore } from '@/stores/personalDoctor'
 import CardsMainDoctor from '@/components/personal-doctor/CardsMainDoctor.vue'
 import Button from '@/components/ui/button/Button.vue'
 import { useRouter } from 'vue-router'
@@ -27,9 +26,6 @@ const router = useRouter()
 const goBack = () => {
   router.go(-1)
 }
-const doctorStore = usePersonalDoctorStore()
-
-console.log(doctorStore.doctorData)
 </script>
 
 <style lang="scss" scoped></style>

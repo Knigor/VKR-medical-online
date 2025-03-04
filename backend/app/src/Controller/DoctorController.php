@@ -6,6 +6,8 @@ namespace App\Controller;
 
 use App\Entity\Doctor;
 use App\Entity\User;
+use App\Entity\Specialization;
+use App\Entity\ScheduleDoctors;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -87,4 +89,94 @@ class DoctorController extends AbstractController
 
         return new JsonResponse(['status' => 'Doctor updated successfully', 'data' => $doctorData], 200);
     }
+
+    #[Route('/api/doctor', name: 'get_doctor', methods: ['GET'])]
+    public function getDoctor(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $doctorId = $request->query->get('doctorId');
+        
+        if (!$doctorId) {
+            return new JsonResponse(['error' => 'Doctor ID is required.'], 400);
+        }
+        
+        $doctor = $em->getRepository(Doctor::class)->find($doctorId);
+        
+        if (!$doctor) {
+            throw new NotFoundHttpException('Doctor not found.');
+        }
+        
+        // Получаем расписание для доктора
+        $schedules = $em->getRepository(ScheduleDoctors::class)->findBy(['doctor' => $doctor]);
+        
+        $scheduleData = array_map(function (ScheduleDoctors $schedule) {
+            return [
+                'scheduleDoctorsId' => $schedule->getScheduleDoctorsId(),
+                'time_schedule' => $schedule->getTimeSchedule()->format('Y-m-d H:i'),
+            ];
+        }, $schedules);
+        
+        $doctorData = [
+            'id' => $doctor->getDoctorId(),
+            'bio' => $doctor->getBio(),
+            'education' => $doctor->getEducation(),
+            'qualification' => $doctor->getQualification(),
+            'experience' => $doctor->getExperience(),
+            'complete_consultation' => $doctor->getCompleteConsultation(),
+            'user_id' => $doctor->getUser() ? $doctor->getUser()->getUserId() : null,
+            'schedule' => $scheduleData,
+        ];
+        
+        return new JsonResponse(['status' => 'success', 'data' => $doctorData], 200);
+    }
+
+
+    #[Route('/api/specializations/search', name: 'search_specializations', methods: ['GET'])]
+    public function searchSpecializations(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $query = $request->query->get('query');
+        
+        if (!$query) {
+            return new JsonResponse(['error' => 'Query parameter is required.'], 400);
+        }
+        
+        $specializations = $em->getRepository(Specialization::class)->createQueryBuilder('s')
+            ->where('s.nameSpecialization LIKE :query')
+            ->setParameter('query', '%' . $query . '%')
+            ->getQuery()
+            ->getResult();
+        
+        $results = [];
+        
+        foreach ($specializations as $specialization) {
+            $doctor = $specialization->getDoctor();
+            if ($doctor) {
+                $schedules = $em->getRepository(ScheduleDoctors::class)->findBy(['doctor' => $doctor]);
+            
+                $scheduleData = array_map(function (ScheduleDoctors $schedule) {
+                    return [
+                        'scheduleDoctorsId' => $schedule->getScheduleDoctorsId(),
+                        'time_schedule' => $schedule->getTimeSchedule()->format('Y-m-d H:i'),
+                    ];
+                }, $schedules);
+            
+                $results[] = [
+                    'nameSpecialization' => $specialization->getNameSpecialization(),
+                    'doctorId' => $doctor->getDoctorId(),
+                    'data' => [
+                        'id' => $doctor->getDoctorId(),
+                        'bio' => $doctor->getBio(),
+                        'education' => $doctor->getEducation(),
+                        'qualification' => $doctor->getQualification(),
+                        'experience' => $doctor->getExperience(),
+                        'complete_consultation' => $doctor->getCompleteConsultation(),
+                        'user_id' => $doctor->getUser() ? $doctor->getUser()->getUserId() : null,
+                        'schedule' => $scheduleData,
+                    ],
+                ];
+            }
+        }
+        
+        return new JsonResponse(['status' => 'success', 'data' => $results], 200);
+    }
+
 }

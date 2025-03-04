@@ -1,6 +1,71 @@
 <template>
   <div class="p-6 max-w-3xl mx-auto">
-    <Button @click="goBack" class="mb-4">Назад</Button>
+    <Button @click="goBack" class="mb-4 bg-pink-400">Назад</Button>
+
+    <div class="bg-white shadow rounded-lg p-4">
+      <h2 class="text-xl font-bold">Специализация</h2>
+      <Listbox v-model="selectedPerson">
+        <div class="relative mt-1">
+          <ListboxButton
+            class="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm"
+          >
+            <span class="block truncate">{{ selectedPerson.name }}</span>
+            <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+              <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
+            </span>
+          </ListboxButton>
+
+          <transition
+            leave-active-class="transition duration-100 ease-in"
+            leave-from-class="opacity-100"
+            leave-to-class="opacity-0"
+          >
+            <ListboxOptions
+              class="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm"
+            >
+              <ListboxOption
+                v-slot="{ active, selected }"
+                v-for="person in people"
+                :key="person.name"
+                :value="person"
+                as="template"
+              >
+                <li
+                  :class="[
+                    active ? 'bg-pink-100 text-pink-900' : 'text-gray-900',
+                    'relative cursor-default select-none py-2 pl-10 pr-4',
+                  ]"
+                >
+                  <span :class="[selected ? 'font-medium' : 'font-normal', 'block truncate']">{{
+                    person.name
+                  }}</span>
+                  <span
+                    v-if="selected"
+                    class="absolute inset-y-0 left-0 flex items-center pl-3 text-pink-600"
+                  >
+                  </span>
+                </li>
+              </ListboxOption>
+            </ListboxOptions>
+          </transition>
+        </div>
+      </Listbox>
+      <Button @click="saveQualification" class="mt-2 bg-pink-400 text-white px-4 py-2 rounded"
+        >Сохранить</Button
+      >
+    </div>
+
+    <div class="bg-white shadow rounded-lg p-4">
+      <h2 class="text-xl font-bold">Тип Тап</h2>
+      <textarea
+        v-model="qualification"
+        class="w-full border rounded p-2 mt-2"
+        placeholder="Введите квалификацию..."
+      ></textarea>
+      <Button @click="saveQualification" class="mt-2 bg-pink-400 text-white px-4 py-2 rounded"
+        >Сохранить</Button
+      >
+    </div>
 
     <div class="bg-white shadow rounded-lg p-4">
       <h2 class="text-xl font-bold">Квалификация</h2>
@@ -9,7 +74,7 @@
         class="w-full border rounded p-2 mt-2"
         placeholder="Введите квалификацию..."
       ></textarea>
-      <Button @click="saveQualification" class="mt-2 text-white px-4 py-2 rounded"
+      <Button @click="saveQualification" class="mt-2 bg-pink-400 text-white px-4 py-2 rounded"
         >Сохранить</Button
       >
     </div>
@@ -21,7 +86,9 @@
         class="w-full border rounded p-2 mt-2"
         placeholder="Введите образование..."
       ></textarea>
-      <Button @click="saveEducation" class="mt-2 text-white px-4 py-2 rounded">Сохранить</Button>
+      <Button @click="saveEducation" class="mt-2 bg-pink-400 text-white px-4 py-2 rounded"
+        >Сохранить</Button
+      >
     </div>
 
     <div class="flex gap-4">
@@ -47,16 +114,20 @@
 
         <div class="flex gap-2 mt-4">
           <input v-model="customTime" type="time" class="border rounded p-2 flex-1" />
-          <Button @click="addCustomTime" class="bg-green-500 text-white px-4 py-2 rounded"
+          <Button
+            @click="addCustomTime"
+            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
             >Добавить</Button
           >
         </div>
 
         <div class="flex gap-2 mt-2">
-          <Button @click="clearAppointments" class="bg-red-500 text-white px-4 py-2 rounded"
+          <Button
+            @click="clearAppointments"
+            class="bg-gray-500 hover:bg-gray-400 text-white px-4 py-2 rounded"
             >Очистить</Button
           >
-          <Button @click="saveAppointments" class="bg-blue-500 text-white px-4 py-2 rounded"
+          <Button @click="saveAppointments" class="bg-pink-400 text-white px-4 py-2 rounded"
             >Сохранить</Button
           >
         </div>
@@ -87,7 +158,18 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/vue'
 import Button from '@/components/ui/button/Button.vue'
+
+const people = [
+  { name: 'Терапевт' },
+  { name: 'Педиатор' },
+  { name: 'Дерматолог' },
+  { name: 'Психолог' },
+  { name: 'Гинеколог' },
+  { name: 'Кардиолог' },
+]
+const selectedPerson = ref(people[0])
 
 const router = useRouter()
 const goBack = () => router.go(-1)

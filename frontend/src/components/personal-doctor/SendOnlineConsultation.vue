@@ -2,9 +2,7 @@
   <div class="flex items-center border w-full min-w-[367px] border-gray-300 rounded-2xl">
     <div class="flex flex-col gap-2 ml-6 mt-4 mb-2">
       <h1 class="text-2xl leading-8 font-bold font-golos">Запись на приём</h1>
-      <p class="text-lg leading-7 font-normal font-golos mb-6">
-        {{ doctorStore.doctorData.specialization }}
-      </p>
+      <p class="text-lg leading-7 font-normal font-golos mb-6">специализация</p>
 
       <div class="w-full bg-gray-300 h-0.5 max-w-[311px]"></div>
       <div class="flex gap-1 items-center mt-3.5">
@@ -184,13 +182,11 @@
 </template>
 
 <script setup>
-import { usePersonalDoctorStore } from '@/stores/personalDoctor'
 import { ShieldAlert } from 'lucide-vue-next'
 import Button from '@/components/ui/button/Button.vue'
 import { ref, onMounted, onBeforeMount } from 'vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
 import { useRouter } from 'vue-router'
-const doctorStore = usePersonalDoctorStore()
 
 // здесь логика для определения дня, даты
 // let count = 1
@@ -237,7 +233,7 @@ const selectTime = (time, date) => {
   showModal.value = false
   sendModal.value = true
 }
-const router = useRouter()
+// const router = useRouter()
 
 // onBeforeUpdate(() => {
 //   if (!doctorStore.doctorData) {
@@ -245,11 +241,11 @@ const router = useRouter()
 //   }
 // })
 
-onBeforeMount(() => {
-  if (!doctorStore.doctorData) {
-    router.go(-1)
-  }
-})
+// onBeforeMount(() => {
+//   if (!doctorStore.doctorData) {
+//     router.go(-1)
+//   }
+// })
 
 // Устанавливаем время и активную кнопку при загрузке
 onMounted(() => {

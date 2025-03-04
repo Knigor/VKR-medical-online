@@ -37,7 +37,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const goToOnlineConsultation = (id) => {
-  router.push(`/onlinePersonal/${id}`) // -> /user/eduardo
+  router.push(`/chat/${id}`)
 }
 
 defineProps({

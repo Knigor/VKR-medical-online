@@ -36,15 +36,15 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const goToOnlineConsultation = (id) => {
-  router.push(`/online/${id}`) // -> /user/eduardo
-}
-
-defineProps({
+const props = defineProps({
   nameSpecialist: String,
   description: String,
   id: Number,
 })
+
+const goToOnlineConsultation = () => {
+  router.push(`/online/${props.nameSpecialist}`)
+}
 </script>
 
 <style scoped></style>

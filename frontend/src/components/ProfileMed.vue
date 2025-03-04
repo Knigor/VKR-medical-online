@@ -109,7 +109,9 @@
 
       <div v-else class="grid items-center w-[260px] gap-3 mt-4">
         <Label class="font-golos" for="text">Личная информация доктора</Label>
-        <Button class="bg-pink-400">Открыть</Button>
+        <Button @click="router.push(`/onlinePersonal/${authStore.doctorId}`)" class="bg-pink-400"
+          >Открыть</Button
+        >
       </div>
 
       <div class="grid items-center w-[260px] gap-3 mt-4">
@@ -165,8 +167,10 @@ import { useToast } from 'vue-toastification'
 import PacientCard from './profile-med/PacientCard.vue'
 import { usePatientCardStore } from '@/stores/patientCardStore'
 import { usePatientCard } from '@/composables/patient-card/usePatientCard'
+import { useRouter } from 'vue-router'
 const isOpen = ref(false)
 
+const router = useRouter()
 const toast = useToast()
 
 const { editProfile } = useProfile()

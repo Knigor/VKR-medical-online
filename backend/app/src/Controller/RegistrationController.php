@@ -67,6 +67,8 @@ class RegistrationController extends AbstractController
         if ($role === 'ROLE_DOCTOR') {
             $doctor = new Doctor();
             $doctor->setUser($user);
+            $doctor->setCompleteConsultation(0);
+            $doctor->setExperience(0);
             $entityManager->persist($doctor);
         }
 

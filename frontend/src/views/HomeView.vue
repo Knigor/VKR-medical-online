@@ -13,9 +13,14 @@ import Button from '@/components/ui/button/Button.vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import { useSpecializationStore } from '@/stores/specializationStore'
 
 const router = useRouter()
 const authStore = useAuthStore()
+
+const specializationStore = useSpecializationStore()
+
+console.log(specializationStore.specializationData)
 
 const specialistList = ref([
   {
@@ -156,11 +161,11 @@ const popularList = ref([
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-[46px] mt-4 sm:mt-6 lg:mt-[43px] mb-8 sm:mb-12 lg:mb-[80px]"
       >
         <CardsDoctor
-          v-for="specialist in specialistList"
-          :key="specialist.id"
-          :id="specialist.id"
-          :name-specialist="specialist.specialization"
-          :description="specialist.description"
+          v-for="specialist in specializationStore.specializationData"
+          :key="specialist.specializationId"
+          :id="specialist.specializationId"
+          :name-specialist="specialist.nameSpecialization"
+          description="По записи"
         />
       </div>
     </div>
@@ -192,7 +197,9 @@ const popularList = ref([
         </div>
       </div>
       <div class="flex justify-center h-[50vh] items-center">
-        <Button @click="router.push(`/onlinePersonal/${1}`)">Моя карточка доктора</Button>
+        <Button @click="router.push(`/onlinePersonal/${authStore.doctorId}`)"
+          >Моя карточка доктора</Button
+        >
       </div>
     </div>
   </div>

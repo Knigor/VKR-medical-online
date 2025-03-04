@@ -50,9 +50,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useRouter, useRoute } from 'vue-router'
 import { Star } from 'lucide-vue-next'
 import SendConsultation from './SendConsultation.vue'
-import { usePersonalDoctorStore } from '@/stores/personalDoctor'
+// import { usePersonalDoctorStore } from '@/stores/personalDoctor'
 
-const router = useRouter()
+// const router = useRouter()
 
 const route = useRoute()
 
@@ -69,14 +69,14 @@ const props = defineProps({
   totalCount: Number,
 })
 
-const doctorStore = usePersonalDoctorStore()
+// const doctorStore = usePersonalDoctorStore()
 
-const goToDoctor = () => {
-  console.log('doctorStore:', doctorStore) // Посмотрим, что вернет store
-  console.log('setDoctorData:', doctorStore.setDoctorData) // Проверяем метод
-  doctorStore.setDoctorData(props)
-  router.push({ name: 'doctorPersonal', params: { id: route.params.id, idPersonal: props.id } })
-}
+// const goToDoctor = () => {
+//   console.log('doctorStore:', doctorStore) // Посмотрим, что вернет store
+//   console.log('setDoctorData:', doctorStore.setDoctorData) // Проверяем метод
+//   doctorStore.setDoctorData(props)
+//   router.push({ name: 'doctorPersonal', params: { id: route.params.id, idPersonal: props.id } })
+// }
 </script>
 
 <style scoped></style>
