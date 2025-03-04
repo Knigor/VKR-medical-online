@@ -14,5 +14,12 @@ export const usePatientCardStore = defineStore('patientCard', {
       this.allergies = data.allergies
       this.chronic_conditions = data.chronic_conditions
     },
+
+    clearPatientCard() {
+      this.policy_number = null
+      this.blood_type = null
+      this.allergies = null
+      this.chronic_conditions = null
+    },
   },
 })

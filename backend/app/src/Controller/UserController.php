@@ -88,7 +88,7 @@ class UserController extends AbstractController
             'username' => $user->getUsername(),
             'role' => $user->getRoles(),
             'gender' => $user->getGender(),
-            'birthdate' => $user->getBirthdate()->format('Y-m-d'),
+            'birthdate' => $user->getBirthdate() ? $user->getBirthdate()->format('Y-m-d') : null,
             'doctorId' => $doctor ? $doctor->getDoctorId() : null,
             'patientId' => $patient ? $patient->getPatientId() : null,
             'photo_user' => $user->getPhotoUser(),

@@ -92,12 +92,13 @@
 import { Input } from '@/components/ui/input'
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/vue'
 import { ref, defineEmits } from 'vue'
+import { usePatientCardStore } from '@/stores/patientCardStore'
 
 const people = ['O-', 'O+', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-']
-
+const patientCard = usePatientCardStore()
 const emit = defineEmits(['select-person'])
 
-const selectedPerson = ref(people[0])
+const selectedPerson = ref(patientCard.blood_type ? patientCard.blood_type : people[0])
 
 const emitSelection = (value) => {
   emit('select-person', value)

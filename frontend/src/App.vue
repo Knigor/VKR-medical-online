@@ -3,11 +3,12 @@ import { RouterLink, RouterView } from 'vue-router'
 import { HeartPulse, IdCard } from 'lucide-vue-next'
 import { Button } from './components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { computed, ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import AuthModal from '@/components/AuthModal.vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from './stores/authStore'
 import { useAuth } from './composables/auth/useAuth'
+import { usePatientCard } from './composables/patient-card/usePatientCard'
 
 const authStore = useAuthStore()
 const { logout, login, register } = useAuth()
@@ -16,6 +17,18 @@ const isModalOpen = ref(false) // модальное окно для автор�
 const isError = ref(false)
 const router = useRouter()
 const registerModalOpen = ref(false)
+
+const { getPatientCard } = usePatientCard()
+
+onMounted(async () => {
+  if (authStore.accessToken && authStore.patientId) {
+    try {
+      await getPatientCard()
+    } catch (error) {
+      console.error(error)
+    }
+  }
+})
 
 // авторизация
 const username = ref('')

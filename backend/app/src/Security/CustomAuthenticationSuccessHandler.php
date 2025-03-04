@@ -53,7 +53,7 @@ class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler
             'gender' => $user->getGender(),
             'doctorId' => $doctor ? $doctor->getDoctorId() : null,
             'patientId' => $patient ? $patient->getPatientId() : null,
-            'birthdate' => $user->getBirthdate()->format('Y-m-d'),
+            'birthdate' => $user->getBirthdate() ? $user->getBirthdate()->format('Y-m-d') : null,
             'photo_user' => $user->getPhotoUser(),
         ];
 

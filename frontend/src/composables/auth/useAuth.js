@@ -1,10 +1,12 @@
 import { useAuthStore } from '@/stores/authStore'
 import publicAPI from '@/plugins/publicApi'
 import { useRouter } from 'vue-router'
+import { usePatientCardStore } from '@/stores/patientCardStore'
 
 export function useAuth() {
   const authStore = useAuthStore()
   const router = useRouter()
+  const patientStore = usePatientCardStore()
 
   async function login(credentials) {
     try {
@@ -41,6 +43,7 @@ export function useAuth() {
   function logout() {
     authStore.setAccessToken(null)
     authStore.clearPersonalData()
+    patientStore.clearPatientCard()
     router.push('/')
   }
 

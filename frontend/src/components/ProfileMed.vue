@@ -234,10 +234,13 @@ const handleEditProfile = async () => {
   try {
     const formData = new FormData()
     formData.append('userId', authStore.id)
-    formData.append('birthdate', birthdate.value)
     formData.append('gender', selectedGender.value)
     formData.append('username', username.value)
     formData.append('fio', fio.value)
+
+    if (birthdate.value) {
+      formData.append('birthdate', birthdate.value)
+    }
 
     if (file.value) {
       formData.append('photo_user', file.value)
