@@ -114,7 +114,17 @@ class DoctorController extends AbstractController
                 'time_schedule' => $schedule->getTimeSchedule()->format('Y-m-d H:i'),
             ];
         }, $schedules);
-        
+    
+        // Получаем специализации доктора
+        $specializations = $em->getRepository(Specialization::class)->findBy(['doctor' => $doctor]);
+    
+        $specializationData = array_map(function (Specialization $specialization) {
+            return [
+                'specializationId' => $specialization->getSpecializationId(),
+                'nameSpecialization' => $specialization->getNameSpecialization(),
+            ];
+        }, $specializations);
+    
         $doctorData = [
             'id' => $doctor->getDoctorId(),
             'bio' => $doctor->getBio(),
@@ -124,6 +134,7 @@ class DoctorController extends AbstractController
             'complete_consultation' => $doctor->getCompleteConsultation(),
             'user_id' => $doctor->getUser() ? $doctor->getUser()->getUserId() : null,
             'schedule' => $scheduleData,
+            'specializations' => $specializationData, // Добавили специализации
         ];
         
         return new JsonResponse(['status' => 'success', 'data' => $doctorData], 200);

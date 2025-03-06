@@ -1,67 +1,38 @@
 <template>
-  <div class="p-6 max-w-3xl mx-auto">
+  <div class="p-6 max-w-7xl mx-auto">
     <Button @click="goBack" class="mb-4 bg-pink-400">Назад</Button>
 
     <div class="bg-white shadow rounded-lg p-4">
       <h2 class="text-xl font-bold">Специализация</h2>
-      <Listbox v-model="selectedPerson">
-        <div class="relative mt-1">
-          <ListboxButton
-            class="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm"
-          >
-            <span class="block truncate">{{ selectedPerson.name }}</span>
-            <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-              <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
-            </span>
-          </ListboxButton>
+      <textarea
+        v-model="specialization"
+        class="w-full border rounded p-2 mt-2 outline-pink-400"
+        placeholder="Введите специализацию..."
+      ></textarea>
+      <Button @click="saveSpecialization" class="mt-2 bg-pink-400 text-white px-4 py-2 rounded"
+        >Сохранить</Button
+      >
+    </div>
 
-          <transition
-            leave-active-class="transition duration-100 ease-in"
-            leave-from-class="opacity-100"
-            leave-to-class="opacity-0"
-          >
-            <ListboxOptions
-              class="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm"
-            >
-              <ListboxOption
-                v-slot="{ active, selected }"
-                v-for="person in people"
-                :key="person.name"
-                :value="person"
-                as="template"
-              >
-                <li
-                  :class="[
-                    active ? 'bg-pink-100 text-pink-900' : 'text-gray-900',
-                    'relative cursor-default select-none py-2 pl-10 pr-4',
-                  ]"
-                >
-                  <span :class="[selected ? 'font-medium' : 'font-normal', 'block truncate']">{{
-                    person.name
-                  }}</span>
-                  <span
-                    v-if="selected"
-                    class="absolute inset-y-0 left-0 flex items-center pl-3 text-pink-600"
-                  >
-                  </span>
-                </li>
-              </ListboxOption>
-            </ListboxOptions>
-          </transition>
-        </div>
-      </Listbox>
+    <div class="bg-white shadow rounded-lg p-4">
+      <h2 class="text-xl font-bold">Биография</h2>
+      <textarea
+        v-model="bio"
+        class="w-full border rounded p-2 mt-2 outline-pink-400"
+        placeholder="Введите квалификацию..."
+      ></textarea>
       <Button @click="saveQualification" class="mt-2 bg-pink-400 text-white px-4 py-2 rounded"
         >Сохранить</Button
       >
     </div>
 
     <div class="bg-white shadow rounded-lg p-4">
-      <h2 class="text-xl font-bold">Тип Тап</h2>
-      <textarea
-        v-model="qualification"
+      <h2 class="text-xl font-bold">Опыт работы</h2>
+      <Input
+        v-model="experience"
         class="w-full border rounded p-2 mt-2"
-        placeholder="Введите квалификацию..."
-      ></textarea>
+        placeholder="Введите ваш опыт работы"
+      ></Input>
       <Button @click="saveQualification" class="mt-2 bg-pink-400 text-white px-4 py-2 rounded"
         >Сохранить</Button
       >
@@ -71,7 +42,7 @@
       <h2 class="text-xl font-bold">Квалификация</h2>
       <textarea
         v-model="qualification"
-        class="w-full border rounded p-2 mt-2"
+        class="w-full border rounded p-2 mt-2 outline-pink-400"
         placeholder="Введите квалификацию..."
       ></textarea>
       <Button @click="saveQualification" class="mt-2 bg-pink-400 text-white px-4 py-2 rounded"
@@ -83,7 +54,7 @@
       <h2 class="text-xl font-bold">Образование</h2>
       <textarea
         v-model="education"
-        class="w-full border rounded p-2 mt-2"
+        class="w-full border rounded p-2 mt-2 outline-pink-400"
         placeholder="Введите образование..."
       ></textarea>
       <Button @click="saveEducation" class="mt-2 bg-pink-400 text-white px-4 py-2 rounded"
@@ -130,6 +101,11 @@
           <Button @click="saveAppointments" class="bg-pink-400 text-white px-4 py-2 rounded"
             >Сохранить</Button
           >
+          <Button
+            @click="deleteAppointments"
+            class="bg-red-500 hover:bg-red-400 text-white px-4 py-2 rounded"
+            >Удалить все расписание</Button
+          >
         </div>
       </div>
 
@@ -137,7 +113,7 @@
         <h2 class="text-xl font-bold">Выбранные даты</h2>
         <div
           v-for="appointment in dateConsultation"
-          :key="appointment.id"
+          :key="appointment.day"
           class="border rounded p-4 mt-2"
         >
           <h3 class="font-bold">{{ appointment.day }}</h3>
@@ -156,37 +132,62 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/vue'
 import Button from '@/components/ui/button/Button.vue'
+import { useDoctorStore } from '@/stores/doctorStore'
+import Input from '@/components/ui/input/Input.vue'
+import { useDoctor } from '@/composables/doctor/useDoctor'
+import { useAuthStore } from '@/stores/authStore'
+import { useToast } from 'vue-toastification'
 
-const people = [
-  { name: 'Терапевт' },
-  { name: 'Педиатор' },
-  { name: 'Дерматолог' },
-  { name: 'Психолог' },
-  { name: 'Гинеколог' },
-  { name: 'Кардиолог' },
-]
-const selectedPerson = ref(people[0])
+const toast = useToast()
 
+const { setScheduleDoctor, deleteScheduleDoctor, getDoctorPersonal } = useDoctor()
+const authStore = useAuthStore()
+const doctorStore = useDoctorStore()
 const router = useRouter()
 const goBack = () => router.go(-1)
 
-const qualification = ref('')
-const education = ref('')
+const specialization = ref(doctorStore.doctorDataPersonal.specializations[0].nameSpecialization)
+const qualification = ref(doctorStore.doctorDataPersonal.qualification)
+const education = ref(doctorStore.doctorDataPersonal.education)
+const experience = ref(doctorStore.doctorDataPersonal.experience)
+const bio = ref(doctorStore.doctorDataPersonal.bio)
+
 const selectedDate = ref('')
 const selectedTimes = ref([])
 const times = ref(['10:00', '13:00', '20:00'])
 const customTime = ref('')
 
-const dateConsultation = ref([
-  { id: 1, day: '5 февраля', time: ['10:00', '13:00', '20:00', '20:00', '20:00', '20:00'] },
-  { id: 2, day: '6 февраля', time: ['11:00', '13:00', '20:00'] },
-  { id: 3, day: '7 февраля', time: ['12:00', '13:00', '20:00'] },
-  { id: 4, day: '14 февраля', time: ['10:00', '13:00', '20:00'] },
-])
+const schedule = computed(() => doctorStore.doctorDataPersonal.schedule)
+// удаляем все расписание
+const deleteAppointments = async () => {
+  try {
+    await deleteScheduleDoctor({ doctorId: authStore.doctorId })
+    await getDoctorPersonal()
+    toast.success('Расписание успешно удалено')
+  } catch (error) {
+    console.error('Ошибка при удалении расписания:', error)
+  }
+}
+
+// Функция для группировки расписания по датам
+const dateConsultation = computed(() => {
+  return Object.entries(
+    schedule.value.reduce((acc, item) => {
+      const date = item.time_schedule.split(' ')[0] // Берём дату без времени
+      if (!acc[date]) {
+        acc[date] = []
+      }
+      acc[date].push(item.time_schedule.split(' ')[1]) // Добавляем время
+      return acc
+    }, {}),
+  ).map(([date, times]) => ({
+    day: new Date(date).toLocaleDateString('ru-RU', { day: '2-digit', month: 'long' }),
+    time: times.sort(), // Сортируем времена по возрастанию
+  }))
+})
 
 const toggleTime = (time) => {
   if (selectedTimes.value.includes(time)) {
@@ -207,18 +208,34 @@ const clearAppointments = () => {
   selectedTimes.value = []
   selectedDate.value = ''
 }
-
+const saveSpecialization = () => console.log('Специализация сохранена:', specialization.value)
 const saveQualification = () => console.log('Квалификация сохранена:', qualification.value)
 const saveEducation = () => console.log('Образование сохранено:', education.value)
-const saveAppointments = () => {
+
+// отправляем дату
+const saveAppointments = async () => {
   if (!selectedDate.value) {
     console.log('Выберите дату')
     return
   }
+
   const formattedAppointments = selectedTimes.value.map((time) => {
-    return `${selectedDate.value.split('-').reverse().join('.')}:${time}:00`
+    return `${selectedDate.value} ${time}` // Формат: YYYY-MM-DD HH:mm
   })
-  console.log('Запись сохранена:', formattedAppointments)
+
+  console.log('Отправляемые данные:', {
+    doctorId: authStore.doctorId,
+    time_schedule: formattedAppointments,
+  })
+
+  await setScheduleDoctor({
+    doctorId: authStore.doctorId,
+    time_schedule: formattedAppointments,
+  })
+
+  await getDoctorPersonal()
+
+  toast.success('Расписание успешно сохранено')
 }
 </script>
 

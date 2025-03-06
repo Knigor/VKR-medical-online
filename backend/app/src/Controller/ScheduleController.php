@@ -50,42 +50,80 @@ class ScheduleController extends AbstractController
         Request $request,
         EntityManagerInterface $em
     ): JsonResponse {
-        // Получаем doctorId из form-data
-        $doctorId = $request->request->get('doctorId');
+        $data = json_decode($request->getContent(), true); // Читаем JSON
+    
+        $doctorId = $data['doctorId'] ?? null;
         if (!$doctorId) {
             return new JsonResponse(['error' => 'doctorId is required.'], 400);
         }
-
-        // Ищем доктора
+    
         $doctor = $em->getRepository(Doctor::class)->find($doctorId);
         if (!$doctor) {
-            throw new NotFoundHttpException('Doctor not found.');
+            return new JsonResponse(['error' => 'Doctor not found.'], 404);
         }
-
-        // Получаем время из запроса
-        $timeSchedule = $request->request->get('time_schedule');
-        if (!$timeSchedule) {
-            return new JsonResponse(['error' => 'time_schedule is required.'], 400);
+    
+        $timeSchedules = $data['time_schedule'] ?? [];
+        if (!is_array($timeSchedules) || empty($timeSchedules)) {
+            return new JsonResponse(['error' => 'time_schedule must be a non-empty array.'], 400);
         }
-
-        // Проверяем формат времени
-        $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $timeSchedule);
-        if (!$dateTime) {
-            return new JsonResponse(['error' => 'Invalid time format. Use "Y-m-d H:i".'], 400);
+    
+        $createdSchedules = [];
+    
+        foreach ($timeSchedules as $timeSchedule) {
+            $dateTime = \DateTime::createFromFormat('Y-m-d H:i', $timeSchedule);
+            if (!$dateTime) {
+                return new JsonResponse(['error' => "Invalid time format: $timeSchedule. Use 'Y-m-d H:i'."], 400);
+            }
+    
+            $schedule = new ScheduleDoctors();
+            $schedule->setDoctor($doctor);
+            $schedule->setTimeSchedule($dateTime);
+    
+            $em->persist($schedule);
+            $createdSchedules[] = [
+                'time_schedule' => $schedule->getTimeSchedule()->format('Y-m-d H:i'),
+            ];
         }
-
-        // Создаем новую запись расписания
-        $schedule = new ScheduleDoctors();
-        $schedule->setDoctor($doctor);
-        $schedule->setTimeSchedule($dateTime);
-
-        // Сохраняем в базе
-        $em->persist($schedule);
+    
         $em->flush();
-
-        return new JsonResponse(['status' => 'Schedule created successfully', 'data' => [
-            'scheduleDoctorsId' => $schedule->getscheduleDoctorsId(),
-            'time_schedule' => $schedule->getTimeSchedule()->format('Y-m-d H:i'),
-        ]], 201);
+    
+        return new JsonResponse([
+            'status' => 'Schedules created successfully',
+            'data' => $createdSchedules
+        ], 201);
     }
+    
+
+    #[Route('/api/schedule/delete', name: 'delete_schedule', methods: ['DELETE'])]
+public function deleteSchedule(
+    Request $request,
+    EntityManagerInterface $em
+): JsonResponse {
+    $data = json_decode($request->getContent(), true);
+    $doctorId = $data['doctorId'] ?? null;
+
+    if (!$doctorId) {
+        return new JsonResponse(['error' => 'doctorId is required.'], 400);
+    }
+
+    $doctor = $em->getRepository(Doctor::class)->find($doctorId);
+    if (!$doctor) {
+        return new JsonResponse(['error' => 'Doctor not found.'], 404);
+    }
+
+    $schedules = $em->getRepository(ScheduleDoctors::class)->findBy(['doctor' => $doctor]);
+
+    if (empty($schedules)) {
+        return new JsonResponse(['message' => 'No schedules found for this doctor.'], 200);
+    }
+
+    foreach ($schedules as $schedule) {
+        $em->remove($schedule);
+    }
+
+    $em->flush();
+
+    return new JsonResponse(['status' => 'All schedules deleted successfully'], 200);
+}
+
 }

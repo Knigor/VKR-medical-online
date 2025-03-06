@@ -10,6 +10,7 @@ import { useAuthStore } from './stores/authStore'
 import { useAuth } from './composables/auth/useAuth'
 import { usePatientCard } from './composables/patient-card/usePatientCard'
 import { useSpecialization } from './composables/specialization/useSpecialization'
+import { useDoctor } from './composables/doctor/useDoctor'
 
 const authStore = useAuthStore()
 
@@ -22,6 +23,7 @@ const registerModalOpen = ref(false)
 
 const { getPatientCard } = usePatientCard()
 const { getSpecialization } = useSpecialization()
+const { getDoctorPersonal } = useDoctor()
 
 onMounted(async () => {
   if (authStore.accessToken) {
@@ -30,7 +32,7 @@ onMounted(async () => {
 
       await Promise.all([
         getSpecialization(),
-        authStore.patientId ? getPatientCard() : Promise.resolve(),
+        authStore.patientId ? getPatientCard() : getDoctorPersonal(),
       ])
     } catch (error) {
       console.error('Ошибка при загрузке данных:', error)
@@ -61,7 +63,7 @@ const handleLogin = async (body) => {
 
     await Promise.all([
       getSpecialization(),
-      authStore.patientId ? getPatientCard() : Promise.resolve(),
+      authStore.patientId ? getPatientCard() : getDoctorPersonal(),
     ])
   } catch (error) {
     console.error(error, 'абоба')

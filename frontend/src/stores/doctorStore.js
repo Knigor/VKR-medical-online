@@ -2,7 +2,18 @@ import { defineStore } from 'pinia'
 
 export const useDoctorStore = defineStore('doctor', {
   state: () => ({
-    doctorData: [],
+    doctorDataPersonal: {},
+    doctorList: [],
   }),
-  actions: {},
+  actions: {
+    setDoctorDataPersonal(data) {
+      this.doctorDataPersonal = data
+    },
+    setDoctorList(data) {
+      this.doctorList = data
+    },
+    clearDoctorPersonal() {
+      this.doctorDataPersonal = {}
+    },
+  },
 })
