@@ -26,15 +26,15 @@ class Doctor
     #[Groups(['doctor:read', 'doctor:write'])]
     private $user;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: 'text', nullable: true)]
     #[Groups(['doctor:read', 'doctor:write'])]
     private $bio;
 
-    #[ORM\Column(type: 'string', length: 200, nullable: true)]
+    #[ORM\Column(type: 'text', nullable: true)]
     #[Groups(['doctor:read', 'doctor:write'])]
     private $education;
 
-    #[ORM\Column(type: 'string', length: 200, nullable: true)]
+    #[ORM\Column(type: 'text', nullable: true)]
     #[Groups(['doctor:read', 'doctor:write'])]
     private $qualification;
 

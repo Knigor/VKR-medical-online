@@ -1,6 +1,7 @@
 <template>
   <div class="h-full min-w-[240px]">
     <h1 class="text-base leading-6 font-semibold mt-4">Расписание врача</h1>
+
     <div class="flex gap-1 items-center">
       <ShieldAlert fill="none" color="#D1D5DB" size="21" />
       <span class="text-gray-300 font-golos text-sm leading-5 font-normal"
@@ -178,7 +179,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { ShieldAlert } from 'lucide-vue-next'
 import Button from '../ui/button/Button.vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
@@ -186,20 +187,35 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-defineProps({
+const props = defineProps({
   name: String,
   specialization: String,
+  schedule: Array,
 })
 
-const dateConsultation = ref([
-  { id: 1, day: '5 февраля', time: ['10:00', '13:00', '20:00', '20:00', '20:00', '20:00'] },
-  { id: 2, day: '6 февраля', time: ['11:00', '13:00', '20:00'] },
-  { id: 3, day: '7 февраля', time: ['12:00', '13:00', '20:00'] },
-  { id: 4, day: '14 февраля', time: ['10:00', '13:00', '20:00'] },
-])
+const scheduleData = ref(props.schedule)
+
+const dateConsultation = computed(() => {
+  const dates = {}
+  scheduleData.value.forEach((item) => {
+    const date = new Date(item.time_schedule)
+    const day = date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })
+    const time = date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+
+    if (!dates[day]) {
+      dates[day] = {
+        id: item.scheduleDoctorsId,
+        day: day,
+        time: [],
+      }
+    }
+    dates[day].time.push(time)
+  })
+  return Object.values(dates)
+})
 
 const selectedTime = ref([])
-const selectedDateId = ref(null) // ID выбранной даты
+const selectedDateId = ref(null)
 const showModal = ref(false)
 const sendModal = ref(false)
 
@@ -230,17 +246,15 @@ const selectTime = (time, date) => {
   sendModal.value = true
 }
 
-// Устанавливаем время и активную кнопку при загрузке
 onMounted(() => {
   selectedDate.value = dateConsultation.value[0].day
   selectDate(dateConsultation.value[0])
 })
 
-// Функция выбора даты
 const selectDate = (date) => {
   selectedTime.value = date.time
   selectedDate.value = date.day
   selectedDateId.value = date.id
-  showModal.value = false // Закрываем модалку при выборе
+  showModal.value = false
 }
 </script>

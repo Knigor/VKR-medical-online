@@ -21,6 +21,7 @@
     "clsx": "^2.1.1",
     "embla-carousel-vue": "^8.5.2",
     "lucide-vue-next": "^0.471.0",
+    "marked": "^15.0.7",
     "node-sass": "^9.0.0",
     "pinia": "^2.3.0",
     "pinia-plugin-persistedstate": "^4.2.0",

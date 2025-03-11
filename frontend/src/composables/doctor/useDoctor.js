@@ -17,6 +17,17 @@ export const useDoctor = () => {
     }
   }
 
+  const getDoctorPersonalOnline = async (doctorId) => {
+    try {
+      const response = await protectedAPI(`/api/doctor?doctorId=${doctorId}`)
+
+      doctorStore.setDoctorPersonalOnline(response.data)
+    } catch (error) {
+      console.error('Ошибка получения личных данных врача:', error)
+      throw error
+    }
+  }
+
   const getDoctorList = async (searchQuery) => {
     try {
       const response = await protectedAPI(`/api/specializations/search?query=${searchQuery}`)
@@ -24,6 +35,16 @@ export const useDoctor = () => {
       doctorStore.setDoctorList(response.data)
     } catch (error) {
       console.error('Ошибка получения списка врачей:', error)
+      throw error
+    }
+  }
+
+  const editDoctorPersonal = async (data) => {
+    try {
+      const response = await protectedAPI('/api/edit_doctor', 'POST', data)
+      doctorStore.setDoctorDataPersonal(response.data)
+    } catch (error) {
+      console.error('Ошибка редактирования личных данных врача:', error)
       throw error
     }
   }
@@ -46,5 +67,12 @@ export const useDoctor = () => {
     }
   }
 
-  return { getDoctorPersonal, getDoctorList, setScheduleDoctor, deleteScheduleDoctor }
+  return {
+    getDoctorPersonal,
+    getDoctorPersonalOnline,
+    getDoctorList,
+    setScheduleDoctor,
+    deleteScheduleDoctor,
+    editDoctorPersonal,
+  }
 }
