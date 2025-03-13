@@ -1,4 +1,6 @@
 <?php
+
+
 // src/Entity/Chat.php
 namespace App\Entity;
 
@@ -15,10 +17,15 @@ class Chat
     #[ORM\Column(type: 'integer')]
     private $chatsId;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'user_id')]
+    #[ORM\ManyToOne(targetEntity: Patient::class)]
+    #[ORM\JoinColumn(name: 'patient_id', referencedColumnName: 'patient_id', nullable: false)]
     #[Groups(['chat:read', 'chat:write'])]
-    private $user;
+    private $patient;
+
+    #[ORM\ManyToOne(targetEntity: Doctor::class)]
+    #[ORM\JoinColumn(name: 'doctor_id', referencedColumnName: 'doctor_id', nullable: false)]
+    #[Groups(['chat:read', 'chat:write'])]
+    private $doctor;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['chat:read', 'chat:write'])]
@@ -37,14 +44,25 @@ class Chat
         return $this->chatsId;
     }
 
-    public function getUser(): ?User
+    public function getPatient(): ?Patient
     {
-        return $this->user;
+        return $this->patient;
     }
 
-    public function setUser(?User $user): self
+    public function setPatient(?Patient $patient): self
     {
-        $this->user = $user;
+        $this->patient = $patient;
+        return $this;
+    }
+
+    public function getDoctor(): ?Doctor
+    {
+        return $this->doctor;
+    }
+
+    public function setDoctor(?Doctor $doctor): self
+    {
+        $this->doctor = $doctor;
         return $this;
     }
 

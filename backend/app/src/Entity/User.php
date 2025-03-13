@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -36,7 +38,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 255)]
     private $password;
 
-    #[ORM\Column(type: 'json',nullable: true)]
+    #[ORM\Column(type: 'json', nullable: true)]
     #[Groups(['user:read', 'user:write'])]
     private $role;
 
@@ -47,6 +49,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     #[Groups(['user:read', 'user:write'])]
     private ?\DateTimeInterface $birthdate = null;
+
+    #[ORM\OneToMany(mappedBy: 'patient', targetEntity: Chat::class)]
+    private Collection $chatsAsPatient;
+
+    #[ORM\OneToMany(mappedBy: 'doctor', targetEntity: Chat::class)]
+    private Collection $chatsAsDoctor;
+
+    public function __construct()
+    {
+        $this->chatsAsPatient = new ArrayCollection();
+        $this->chatsAsDoctor = new ArrayCollection();
+    }
 
     public function getUserId(): ?int
     {
@@ -156,9 +170,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // Очищайте временные данные пользователя, если нужно
     }
 
-    // Реализация метода для новых версий Symfony
     public function getUserIdentifier(): string
     {
-        return $this->username; // Укажите поле, используемое как идентификатор
+        return $this->username;
+    }
+
+    public function getChatsAsPatient(): Collection
+    {
+        return $this->chatsAsPatient;
+    }
+
+    public function getChatsAsDoctor(): Collection
+    {
+        return $this->chatsAsDoctor;
     }
 }

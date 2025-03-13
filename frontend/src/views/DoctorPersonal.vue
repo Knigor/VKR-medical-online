@@ -9,7 +9,8 @@
           :name="doctorStore.doctorPersonalOnline.fullName"
         />
         <ExperienceDoctor :qualification="doctorStore.doctorPersonalOnline.qualification" />
-        <EducationDoctor />
+        <BioDoctor :bio="doctorStore.doctorPersonalOnline.bio" />
+        <EducationDoctor :education="doctorStore.doctorPersonalOnline.education" />
       </div>
       <div>
         <SendOnlineConsultation />
@@ -68,6 +69,7 @@ import { useRouter, useRoute } from 'vue-router'
 import ExperienceDoctor from '@/components/personal-doctor/ExperienceDoctor.vue'
 import EducationDoctor from '@/components/personal-doctor/EducationDoctor.vue'
 import SendOnlineConsultation from '@/components/personal-doctor/SendOnlineConsultation.vue'
+import BioDoctor from '@/components/personal-doctor/BioDoctor.vue'
 import { useDoctorStore } from '@/stores/doctorStore'
 import { useDoctor } from '@/composables/doctor/useDoctor'
 
