@@ -49,15 +49,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import SideBarChat from '@/components/chat-components/SideBarChat.vue'
 import MainBarChat from '@/components/chat-components/MainBarChat.vue'
+import { useAuthStore } from '@/stores/authStore'
+import io from 'socket.io-client'
 
-const messages = ref([
-  { id: 1, text: 'Привет!', isSentByUser: true, type: 'text' },
-  { id: 2, text: 'Здравствуйте, как дела?', isSentByUser: false, type: 'text' },
-])
+const authStore = useAuthStore()
+const username = authStore.userName || 'Аноним' // Имя пользователя
 
+const socket = io('http://localhost:5000') // Подключение к WebSocket-серверу
+
+const messages = ref([])
 const newMessage = ref('')
 const fileInput = ref(null)
 const chatContainer = ref(null)
@@ -70,19 +73,36 @@ const scrollToBottom = () => {
   })
 }
 
+// При подключении отправляем имя пользователя
+socket.on('connect', () => {
+  socket.emit('login', { username })
+})
+
+// Получаем сообщения от сервера
+socket.on('message', (data) => {
+  messages.value.push({
+    id: Date.now(),
+    text: data.message,
+    isSentByUser: data.username === username, // Проверяем, кто отправил сообщение
+    type: 'text',
+  })
+  scrollToBottom()
+})
+
+// Отправка текстового сообщения
 const sendMessage = () => {
   if (newMessage.value.trim()) {
-    messages.value.push({
-      id: Date.now(),
-      text: newMessage.value,
-      isSentByUser: true,
-      type: 'text',
-    })
+    const messageData = {
+      message: newMessage.value,
+      username: username,
+    }
+
+    socket.emit('message', messageData) // Отправляем на сервер
     newMessage.value = ''
-    scrollToBottom()
   }
 }
 
+// Отправка изображения
 const triggerFileInput = () => {
   fileInput.value.click()
 }
@@ -92,6 +112,14 @@ const handleFileUpload = (event) => {
   if (file) {
     const reader = new FileReader()
     reader.onload = (e) => {
+      const imageData = {
+        imageUrl: e.target.result,
+        username: username,
+        type: 'image',
+      }
+
+      socket.emit('message', imageData) // Отправляем изображение на сервер
+
       messages.value.push({
         id: Date.now(),
         imageUrl: e.target.result,
@@ -105,6 +133,11 @@ const handleFileUpload = (event) => {
 }
 
 onMounted(scrollToBottom)
+
+// Отключение WebSocket при размонтировании компонента
+onBeforeUnmount(() => {
+  socket.disconnect()
+})
 </script>
 
 <style scoped></style>

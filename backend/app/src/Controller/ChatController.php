@@ -4,69 +4,69 @@ namespace App\Controller;
 
 use App\Entity\Chat;
 use App\Entity\Message;
-use App\Entity\User;
 use App\Entity\Patient;
 use App\Entity\Doctor;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ChatController extends AbstractController
 {
-    #[Route('/api/chat/patient', methods: ['GET'])]
-    public function getPatientChats(Request $request, EntityManagerInterface $em): JsonResponse
+    private HttpClientInterface $httpClient;
+
+    public function __construct(HttpClientInterface $httpClient)
     {
-        $patientId = $request->query->get('patient_id');
-        $chats = $em->getRepository(Chat::class)->findBy(['user' => $patientId]);
-        return $this->json($chats, 200, [], ['groups' => 'chat:read']);
+        $this->httpClient = $httpClient;
     }
 
-    #[Route('/api/chat/doctor', methods: ['GET'])]
-    public function getDoctorChats(Request $request, EntityManagerInterface $em): JsonResponse
+    #[Route('/api/chat/{chatId}/messages', methods: ['GET'])]
+    public function getChatMessages(int $chatId, EntityManagerInterface $em): JsonResponse
     {
-        $doctorId = $request->query->get('doctor_id');
-        $chats = $em->getRepository(Chat::class)->findBy(['doctor' => $doctorId]);
-        return $this->json($chats, 200, [], ['groups' => 'chat:read']);
+        $chat = $em->getRepository(Chat::class)->find($chatId);
+        if (!$chat) {
+            return $this->json(['error' => 'Chat not found'], 404);
+        }
+
+        $messages = $em->getRepository(Message::class)->findBy(['chat' => $chat]);
+        return $this->json($messages, 200, [], ['groups' => 'message:read']);
     }
 
     #[Route('/api/chat/start', methods: ['POST'])]
     public function startChat(Request $request, EntityManagerInterface $em): JsonResponse
     {
-        $data = $request->request->all() ?: json_decode($request->getContent(), true);
+        $data = json_decode($request->getContent(), true);
         $patient = $em->getRepository(Patient::class)->find($data['patientId']);
         $doctor = $em->getRepository(Doctor::class)->find($data['doctorId']);
-    
+
         if (!$patient || !$doctor) {
-            return $this->json(['error' => 'Invalid user or doctor'], 400);
+            return $this->json(['error' => 'Invalid patient or doctor'], 400);
         }
-    
-        // Проверяем, существует ли уже чат между этим пациентом и врачом
+
         $existingChat = $em->getRepository(Chat::class)->findOneBy([
             'patient' => $patient,
             'doctor' => $doctor,
         ]);
-    
+
         if ($existingChat) {
             return $this->json([
-                'error' => 'Chat already exists',
+                'message' => 'Chat already exists',
                 'chatId' => $existingChat->getChatsId(),
-            ], 400);
+            ], 200);
         }
-    
+
         $chat = new Chat();
         $chat->setPatient($patient);
         $chat->setDoctor($doctor);
         $chat->setCreatedAt(new \DateTime());
         $chat->setUpdatedAt(new \DateTime());
         $chat->setStatusChats(true);
-    
+
         $em->persist($chat);
         $em->flush();
-    
+
         return $this->json([
             'message' => 'Chat created successfully',
             'chatId' => $chat->getChatsId(),
@@ -76,37 +76,35 @@ class ChatController extends AbstractController
     #[Route('/api/chat/send-message', methods: ['POST'])]
     public function sendMessage(Request $request, EntityManagerInterface $em): JsonResponse
     {
-        $data = $request->request->all() ?: json_decode($request->getContent(), true);
-        $chat = $em->getRepository(Chat::class)->find($data['chat_id']);
-        $user = $em->getRepository(User::class)->find($data['user_id']);
+        $data = json_decode($request->getContent(), true);
 
-        if (!$chat || !$user) {
-            return $this->json(['error' => 'Invalid chat or user'], 400);
+        if (!isset($data['chatId'], $data['senderId'], $data['message'])) {
+            return $this->json(['error' => 'Invalid data'], 400);
+        }
+
+        $chat = $em->getRepository(Chat::class)->find($data['chatId']);
+        if (!$chat) {
+            return $this->json(['error' => 'Chat not found'], 404);
         }
 
         $message = new Message();
         $message->setChat($chat);
-        $message->setUser($user);
-        $message->setMessage($data['message'] ?? null);
+        $message->setUser($data['senderId']);
+        $message->setMessage($data['message']);
         $message->setTimestamp(new \DateTime());
-
-        if ($request->files->get('image')) {
-            /** @var UploadedFile $image */
-            $image = $request->files->get('image');
-            $uploadsDir = $this->getParameter('kernel.project_dir') . '/public/uploads/messages';
-            $filename = uniqid() . '.' . $image->guessExtension();
-            
-            try {
-                $image->move($uploadsDir, $filename);
-                $message->setMessagesImage('/uploads/messages/' . $filename);
-            } catch (FileException $e) {
-                return $this->json(['error' => 'File upload failed'], 500);
-            }
-        }
 
         $em->persist($message);
         $em->flush();
 
-        return $this->json($message, 201, [], ['groups' => 'message:read']);
+        // Отправка в WebSocket (Mercure)
+        $this->httpClient->request('POST', 'http://localhost:5000/socket.io/', [
+            'json' => [
+                'chatId' => $data['chatId'],
+                'message' => $data['message'],
+                'senderId' => $data['senderId']
+            ]
+        ]);
+
+        return $this->json(['status' => 'Message sent']);
     }
 }

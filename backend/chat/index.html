@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"></script>
+    <title>Chat</title>
+</head>
+
+<body>
+    <h1>Chat</h1>
+    <ul id="messages"></ul>
+    <input type="text" id="messageInput" placeholder="Введите сообщение">
+    <input type="file" id="imageInput">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        var socket = io('http://localhost:5000');
+        var username = prompt("Введите ваше имя:");
+        var receiver = prompt("Введите имя собеседника:");
+        var chatId = prompt("Введите ID чата (например, 40, 50) или оставьте пустым для генерации");
+
+        socket.emit('login', { username });
+
+        // Вход в чат
+        socket.emit('join_chat', { user1: username, receiver: receiver, chat_id: chatId });
+
+        // Получение истории сообщений
+        socket.on('chat_history', function (data) {
+            var messages = document.getElementById('messages');
+            data.history.forEach(msg => {
+                var item = document.createElement('li');
+                item.textContent = msg.username + ": " + msg.message + " (время: " + msg.timestamp + ")";
+                if (msg.image) {
+                    var img = document.createElement('img');
+                    img.src = msg.image;
+                    img.style.maxWidth = "100px";
+                    item.appendChild(img);
+                }
+                messages.appendChild(item);
+            });
+        });
+
+        // Получение сообщений
+        socket.on('message', function (data) {
+            var messages = document.getElementById('messages');
+            var item = document.createElement('li');
+            item.textContent = data.username + ": " + data.message + " (время: " + data.timestamp + ")";
+            if (data.image) {
+                var img = document.createElement('img');
+                img.src = data.image;
+                img.style.maxWidth = "100px";
+                item.appendChild(img);
+            }
+            messages.appendChild(item);
+        });
+
+        // Отправка сообщений и изображений
+        function sendMessage() {
+            var messageInput = document.getElementById('messageInput');
+            var imageInput = document.getElementById('imageInput');
+            var message = messageInput.value;
+
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                socket.emit('message', { receiver, message, image: e.target.result, chat_id: chatId });
+            };
+
+            if (imageInput.files.length > 0) {
+                reader.readAsDataURL(imageInput.files[0]);
+            } else {
+                socket.emit('message', { receiver, message, chat_id: chatId });
+            }
+
+            messageInput.value = '';
+            imageInput.value = '';
+        }
+    </script>
+</body>
+
+</html>
