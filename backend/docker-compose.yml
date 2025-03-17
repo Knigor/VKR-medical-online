@@ -46,6 +46,18 @@ services:
     networks:
       nginx-php82-pgsql:
 
+  chat-service:
+    build:
+      context: ./chat
+    container_name: chat-container
+    ports:
+      - "5000:5000"
+    networks:
+      - nginx-php82-pgsql
+    depends_on:
+      - php82-service
+      - postgres-db
+
 volumes:
   postgresdb-data:
 

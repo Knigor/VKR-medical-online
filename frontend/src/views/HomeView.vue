@@ -10,50 +10,24 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel'
 import Button from '@/components/ui/button/Button.vue'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useSpecializationStore } from '@/stores/specializationStore'
 
+import { useDoctorStore } from '@/stores/doctorStore'
+
 const router = useRouter()
 const authStore = useAuthStore()
+const doctorStore = useDoctorStore()
 
 const specializationStore = useSpecializationStore()
 
 console.log(specializationStore.specializationData)
 
-const specialistList = ref([
-  {
-    id: 1,
-    description: 'По записи',
-    specialization: 'Терапевт',
-  },
-  {
-    id: 2,
-    description: 'По записи',
-    specialization: 'Педиатор',
-  },
-  {
-    id: 3,
-    description: 'По записи',
-    specialization: 'Дерматолог',
-  },
-  {
-    id: 4,
-    description: 'По записи',
-    specialization: 'Психолог',
-  },
-  {
-    id: 5,
-    description: 'По записи',
-    specialization: 'Гинеколог',
-  },
-  {
-    id: 6,
-    description: 'По записи',
-    specialization: 'Кардиолог',
-  },
-])
+const filteredOnlineChats = computed(() =>
+  doctorStore.doctorChatList.filter((item) => item.statusChat === true),
+)
 
 const popularList = ref([
   {
@@ -100,6 +74,28 @@ const popularList = ref([
       >
         Онлайн-консультации с врачами
       </h1>
+
+      <div v-if="filteredOnlineChats.length">
+        <h2
+          class="mt-6 sm:mt-8 lg:mt-[20px] text-xl sm:text-2xl lg:text-3xl leading-7 sm:leading-8 lg:leading-9 font-golos font-semibold"
+        >
+          Список онлайн чатов
+        </h2>
+
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-[46px] mt-4 sm:mt-6 lg:mt-[43px] mb-8 sm:mb-12 lg:mb-[80px]"
+        >
+          <CardsOnlineConsultation
+            v-for="doctor in filteredOnlineChats"
+            :key="doctor.chatId"
+            :id="doctor.chatId"
+            :patientUsername="doctor.patientUsername"
+            :doctorUsername="doctor.doctorUsername"
+            :statusChat="doctor.statusChat"
+          />
+        </div>
+      </div>
+
       <h2
         class="mt-4 sm:mt-6 lg:mt-[20px] text-xl sm:text-2xl lg:text-3xl leading-7 sm:leading-8 lg:leading-9 font-golos font-semibold"
       >
@@ -142,11 +138,12 @@ const popularList = ref([
           class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-[46px] mt-4 sm:mt-6 lg:mt-[43px] mb-8 sm:mb-12 lg:mb-[80px]"
         >
           <CardsOnlineConsultation
-            v-for="specialist in specialistList"
-            :key="specialist.id"
-            :id="specialist.id"
-            :name-specialist="specialist.specialization"
-            :description="specialist.description"
+            v-for="doctor in filteredOnlineChats"
+            :key="doctor.chatId"
+            :id="doctor.chatId"
+            :patientUsername="doctor.patientUsername"
+            :doctorUsername="doctor.doctorUsername"
+            :statusChat="doctor.statusChat"
           />
         </div>
       </div>
@@ -176,8 +173,8 @@ const popularList = ref([
       >
         Онлайн-консультации с врачами
       </h1>
-      <!-- Активация списка если есть активные чаты -->
-      <div v-if="true">
+      <!-- Активация списка если есть активные чаты  !!!!!!!!!сюда -->
+      <div v-if="filteredOnlineChats.length">
         <h2
           class="mt-6 sm:mt-8 lg:mt-[20px] text-xl sm:text-2xl lg:text-3xl leading-7 sm:leading-8 lg:leading-9 font-golos font-semibold"
         >
@@ -188,13 +185,26 @@ const popularList = ref([
           class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-[46px] mt-4 sm:mt-6 lg:mt-[43px] mb-8 sm:mb-12 lg:mb-[80px]"
         >
           <CardsOnlineConsultation
-            v-for="specialist in specialistList"
-            :key="specialist.id"
-            :id="specialist.id"
-            :name-specialist="specialist.specialization"
-            :description="specialist.description"
+            v-for="doctor in doctorStore.doctorChatList"
+            :key="doctor.chatId"
+            :id="doctor.chatId"
+            :patientUsername="doctor.patientUsername"
+            :doctorUsername="doctor.doctorUsername"
+            :statusChat="doctor.statusChat"
           />
         </div>
+      </div>
+      <div class="pt2" v-else>
+        <p
+          class="mt-6 sm:mt-8 lg:mt-[20px] text-xl text-gray-800 sm:text-2xl lg:text-3xl leading-7 sm:leading-8 lg:leading-9 font-golos font-semibold"
+        >
+          У вас нету активных чатов
+        </p>
+        <p
+          class="mt-2 sm:mt-3 lg:mt-[6px] text-gray-500 font-golos text-sm sm:text-base lg:text-base leading-5 sm:leading-6 font-normal"
+        >
+          Перейдите в профиль если еще не заполнили свою карточку
+        </p>
       </div>
       <div class="flex justify-center h-[50vh] items-center">
         <Button @click="router.push(`/onlinePersonal/${authStore.doctorId}`)"

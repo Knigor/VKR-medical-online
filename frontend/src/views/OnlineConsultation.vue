@@ -49,6 +49,8 @@
           :time-schedule="doctor.data.schedule"
           :photo="doctor.data.photo_user"
           :schedule="doctor.data.schedule"
+          :statusChat="doctor.statusChat"
+          :chatId="doctor.chatId"
         />
       </ScrollArea>
     </div>
@@ -63,11 +65,15 @@ import { onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDoctorStore } from '@/stores/doctorStore'
 import { useDoctor } from '@/composables/doctor/useDoctor'
+import { useAuthStore } from '@/stores/authStore'
+import { useChat } from '@/composables/chat/useChat'
 
 const doctorStore = useDoctorStore()
+const authStore = useAuthStore()
 const router = useRouter()
 const route = useRoute()
 const { getDoctorList } = useDoctor()
+const { getChatList } = useChat()
 
 const goBack = () => {
   router.push('/')
@@ -79,6 +85,7 @@ onMounted(async () => {
   try {
     isPending.value = true
     await getDoctorList(route.params.id)
+    await getChatList(authStore.patientId)
   } catch (error) {
     console.error('Ошибка при загрузке данных:', error)
   } finally {

@@ -4,9 +4,13 @@ export const useDoctorStore = defineStore('doctor', {
   state: () => ({
     doctorDataPersonal: {},
     doctorList: [],
+    doctorChatList: [],
     doctorPersonalOnline: {},
   }),
   actions: {
+    setDoctorChatList(data) {
+      this.doctorChatList = data
+    },
     setDoctorDataPersonal(data) {
       this.doctorDataPersonal = data
     },

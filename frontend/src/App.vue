@@ -11,10 +11,12 @@ import { useAuth } from './composables/auth/useAuth'
 import { usePatientCard } from './composables/patient-card/usePatientCard'
 import { useSpecialization } from './composables/specialization/useSpecialization'
 import { useDoctor } from './composables/doctor/useDoctor'
+import { useChat } from '@/composables/chat/useChat'
 
 const authStore = useAuthStore()
 
 const { logout, login, register } = useAuth()
+const { getChatListDoctor, getChatListPacient } = useChat()
 const isModalProfile = ref(false)
 const isModalOpen = ref(false) // модальное окно для авторизации
 const isError = ref(false)
@@ -32,7 +34,9 @@ onMounted(async () => {
 
       await Promise.all([
         getSpecialization(),
-        authStore.patientId ? getPatientCard() : getDoctorPersonal(),
+        authStore.patientId
+          ? getPatientCard() && getChatListPacient(authStore.patientId)
+          : getDoctorPersonal() && getChatListDoctor(authStore.doctorId),
       ])
     } catch (error) {
       console.error('Ошибка при загрузке данных:', error)
@@ -171,7 +175,7 @@ const goToProfile = () => {
     </header>
     <hr class="max-sm:mt-[20px]" />
 
-    <div v-if="isLoadingMain" class="justify-center items-center flex" role="status">
+    <div v-if="isLoadingMain" class="justify-center items-center flex mt-12" role="status">
       <svg
         aria-hidden="true"
         class="w-14 h-14 text-gray-200 animate-spin dark:text-gray-600 fill-pink-600"

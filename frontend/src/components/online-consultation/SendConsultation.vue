@@ -8,7 +8,7 @@
         >Запись по местному времени</span
       >
     </div>
-    <div v-if="!isChat">
+    <div v-if="!statusChat">
       <div class="flex flex-wrap gap-2 mt-4">
         <Button
           v-for="(date, index) in dateConsultation.slice(0, 3)"
@@ -37,7 +37,7 @@
       </div>
     </div>
     <Button
-      @click="router.push(`/chat/${1}`)"
+      @click="router.push(`/chat/${chatId}`)"
       class="mt-4 bg-pink-300 hover:bg-pink-400 rounded-2xl"
       v-else
       >Перейти в чат</Button
@@ -184,13 +184,20 @@ import { ShieldAlert } from 'lucide-vue-next'
 import Button from '../ui/button/Button.vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/authStore'
+import { useChat } from '@/composables/chat/useChat'
 
+const authStore = useAuthStore()
+const { chatStart, getChatList } = useChat()
 const router = useRouter()
 
 const props = defineProps({
   name: String,
   specialization: String,
   schedule: Array,
+  statusChat: Boolean,
+  doctorId: Number,
+  chatId: Number,
 })
 
 const scheduleData = ref(props.schedule)
@@ -228,11 +235,22 @@ const closeModalSend = () => {
   selectDate(dateConsultation.value[0])
 }
 
-const isChat = ref(false)
+// const isChat = ref(false)
 
-const sendModalChat = () => {
-  sendModal.value = false
-  isChat.value = true
+const sendModalChat = async () => {
+  try {
+    const data = {
+      patientId: authStore.patientId,
+      doctorId: props.doctorId,
+    }
+
+    await chatStart(data)
+    await getChatList(authStore.patientId)
+  } catch (error) {
+    console.error('Ошибка при загрузке данных:', error)
+  } finally {
+    sendModal.value = false
+  }
 }
 
 const closeModal = () => {

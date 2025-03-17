@@ -39,14 +39,20 @@
       </div>
     </div>
 
-    <SendConsultation :schedule="schedule" :name="name" :specialization="specialization" />
+    <SendConsultation
+      :statusChat="statusChat"
+      :schedule="schedule"
+      :name="name"
+      :specialization="specialization"
+      :doctorId="id"
+      :chatId="chatId"
+    />
   </div>
 </template>
 
 <script setup>
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useRouter, useRoute } from 'vue-router'
-import { Star } from 'lucide-vue-next'
 import SendConsultation from './SendConsultation.vue'
 import { computed } from 'vue'
 import { useDoctor } from '@/composables/doctor/useDoctor'
@@ -70,6 +76,8 @@ const props = defineProps({
   totalCount: Number,
   photo: String,
   schedule: Array,
+  statusChat: Boolean,
+  chatId: Number,
 })
 
 const avatarSrc = computed(() => {
