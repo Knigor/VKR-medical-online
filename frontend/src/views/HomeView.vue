@@ -81,7 +81,7 @@ const popularList = ref([
         >
           Список онлайн чатов
         </h2>
-
+        <!--ПАЦИЕНТЫ-->
         <div
           class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-[46px] mt-4 sm:mt-6 lg:mt-[43px] mb-8 sm:mb-12 lg:mb-[80px]"
         >
@@ -92,6 +92,8 @@ const popularList = ref([
             :patientUsername="doctor.patientUsername"
             :doctorUsername="doctor.doctorUsername"
             :statusChat="doctor.statusChat"
+            :patientId="doctor.patientId"
+            :doctorId="doctor.doctorId"
           />
         </div>
       </div>
@@ -133,7 +135,7 @@ const popularList = ref([
         >
           Список онлайн чатов
         </h2>
-
+        <!--ВРАЧИ-->
         <div
           class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-[46px] mt-4 sm:mt-6 lg:mt-[43px] mb-8 sm:mb-12 lg:mb-[80px]"
         >
@@ -144,6 +146,8 @@ const popularList = ref([
             :patientUsername="doctor.patientUsername"
             :doctorUsername="doctor.doctorUsername"
             :statusChat="doctor.statusChat"
+            :patientId="doctor.patientId"
+            :doctorId="doctor.doctorId"
           />
         </div>
       </div>
@@ -162,6 +166,7 @@ const popularList = ref([
           :key="specialist.specializationId"
           :id="specialist.specializationId"
           :name-specialist="specialist.nameSpecialization"
+          :avatar_img="specialist.image"
           description="По записи"
         />
       </div>
@@ -185,12 +190,14 @@ const popularList = ref([
           class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-[46px] mt-4 sm:mt-6 lg:mt-[43px] mb-8 sm:mb-12 lg:mb-[80px]"
         >
           <CardsOnlineConsultation
-            v-for="doctor in doctorStore.doctorChatList"
+            v-for="doctor in filteredOnlineChats"
             :key="doctor.chatId"
             :id="doctor.chatId"
             :patientUsername="doctor.patientUsername"
             :doctorUsername="doctor.doctorUsername"
             :statusChat="doctor.statusChat"
+            :patientId="doctor.patientId"
+            :doctorId="doctor.doctorId"
           />
         </div>
       </div>

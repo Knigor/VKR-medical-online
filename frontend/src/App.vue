@@ -27,13 +27,24 @@ const { getPatientCard } = usePatientCard()
 const { getSpecialization } = useSpecialization()
 const { getDoctorPersonal } = useDoctor()
 
+// картинки для специализаций
+
+const images = [
+  'image_1.jpg',
+  'image_2.jpg',
+  'image_3.jpg',
+  'image_4.jpg',
+  'image_5.jpg',
+  'image_6.jpg',
+]
+
 onMounted(async () => {
   if (authStore.accessToken) {
     try {
       isLoadingMain.value = true
 
       await Promise.all([
-        getSpecialization(),
+        getSpecialization(images),
         authStore.patientId
           ? getPatientCard() && getChatListPacient(authStore.patientId)
           : getDoctorPersonal() && getChatListDoctor(authStore.doctorId),
@@ -66,8 +77,10 @@ const handleLogin = async (body) => {
     isLoadingMain.value = true
 
     await Promise.all([
-      getSpecialization(),
-      authStore.patientId ? getPatientCard() : getDoctorPersonal(),
+      getSpecialization(images),
+      authStore.patientId
+        ? getPatientCard() && getChatListPacient(authStore.patientId)
+        : getDoctorPersonal() && getChatListDoctor(authStore.doctorId),
     ])
   } catch (error) {
     console.error(error, 'абоба')
@@ -152,6 +165,7 @@ const goToProfile = () => {
         >
           <div class="flex flex-col ml-[23px] mt-[12px]">
             <p
+              @click="goToProfile"
               class="text-lg leading-7 font-normal text-black mb-[5px] cursor-pointer hover:text-[#F472B6] font-golos"
             >
               {{ authStore.fio.split(' ')[0] }} {{ authStore.fio.split(' ')[1] }}

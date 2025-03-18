@@ -10,10 +10,9 @@
         />
         <ExperienceDoctor :qualification="doctorStore.doctorPersonalOnline.qualification" />
         <BioDoctor :bio="doctorStore.doctorPersonalOnline.bio" />
-        <EducationDoctor :education="doctorStore.doctorPersonalOnline.education" />
       </div>
       <div>
-        <SendOnlineConsultation />
+        <EducationDoctor :education="doctorStore.doctorPersonalOnline.education" />
       </div>
     </div>
     <!-- Скелетончики -->

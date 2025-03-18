@@ -1,6 +1,8 @@
 <template>
   <div
-    @click="goToOnlineConsultation(id)"
+    @click="
+      goToOnlineConsultation(id, statusChat, doctorUsername, patientUsername, patientId, doctorId)
+    "
     class="flex items-center border-gray-300 hover:shadow-md cursor-pointer group border-[1px] rounded-[8px] pr-4 sm:pr-6 lg:pr-8 mr-2"
   >
     <div class="flex flex-col mt-4 sm:mt-6 lg:mt-[32px] ml-4 sm:ml-6 lg:ml-[20px]">
@@ -36,21 +38,38 @@
 
 <script setup>
 import { Button } from './ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-
-const goToOnlineConsultation = (id) => {
-  router.push(`/chat/${id}`)
-}
 
 defineProps({
   patientUsername: String,
   doctorUsername: String,
   statusChat: Boolean,
   id: Number,
+  patientId: Number,
+  doctorId: Number,
 })
+
+const goToOnlineConsultation = (
+  id,
+  statusChat,
+  doctorUsername,
+  patientUsername,
+  patientId,
+  doctorId,
+) => {
+  router.push({
+    path: `/chat/${id}`,
+    query: {
+      statusChat,
+      doctorUsername,
+      patientUsername,
+      patientId,
+      doctorId,
+    },
+  })
+}
 </script>
 
 <style scoped></style>

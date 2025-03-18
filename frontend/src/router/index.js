@@ -42,6 +42,7 @@ const router = createRouter({
       path: '/chat/:idChat',
       name: 'chat',
       component: ChatWithDoctor,
+      props: true,
     },
     {
       path: '/profile',

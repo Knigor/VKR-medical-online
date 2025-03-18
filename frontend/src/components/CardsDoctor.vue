@@ -1,7 +1,7 @@
 <template>
   <div
     @click="goToOnlineConsultation(id)"
-    class="flex items-center border-gray-300 hover:shadow-md cursor-pointer group border-[1px] rounded-[8px] pr-4 sm:pr-6 lg:pr-8 mr-2"
+    class="flex items-center justify-between border-gray-300 hover:shadow-md cursor-pointer group border-[1px] rounded-[8px] pr-4 sm:pr-6 lg:pr-8 mr-2"
   >
     <div class="flex flex-col mt-4 sm:mt-6 lg:mt-[32px] ml-4 sm:ml-6 lg:ml-[20px]">
       <h2
@@ -23,7 +23,8 @@
     </div>
 
     <Avatar class="h-[80px] w-[80px] sm:h-[100px] sm:w-[100px] lg:h-[120px] lg:w-[120px] ml-6">
-      <AvatarImage src="/icons/avatar-test.svg" alt="@radix-vue" />
+      <AvatarImage :src="`/specializations/${avatar_img}`" alt="@radix-vue" />
+
       <AvatarFallback>CN</AvatarFallback>
     </Avatar>
   </div>
@@ -32,6 +33,7 @@
 <script setup>
 import { Button } from './ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -39,6 +41,7 @@ const router = useRouter()
 const props = defineProps({
   nameSpecialist: String,
   description: String,
+  avatar_img: String,
   id: Number,
 })
 

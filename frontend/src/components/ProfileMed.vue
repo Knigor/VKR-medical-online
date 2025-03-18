@@ -89,8 +89,10 @@
                         class="inline-flex justify-center rounded-md border border-transparent bg-pink-400 px-4 py-2 text-sm font-medium text-white hover:bg-pink-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                         @click="handleEditCardPatient"
                       >
-                        Сохранить
+                        {{ !isLoading ? 'Сохранить' : '' }}
+                        <Loader v-if="isLoading" />
                       </button>
+
                       <button
                         type="button"
                         class="inline-flex justify-center rounded-md border border-transparent bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
@@ -147,7 +149,8 @@
       type="submit"
       class="font-golos w-full mt-[26px]"
     >
-      <Contact class="w-4 h-4 mr-2" /> Сохранить изменения
+      <Contact class="w-4 h-4 mr-2" /> {{ !isLoading ? 'Сохранить изменения' : '' }}
+      <Loader v-if="isLoading" />
     </Button>
   </div>
 </template>
@@ -168,6 +171,7 @@ import PacientCard from './profile-med/PacientCard.vue'
 import { usePatientCardStore } from '@/stores/patientCardStore'
 import { usePatientCard } from '@/composables/patient-card/usePatientCard'
 import { useRouter } from 'vue-router'
+import Loader from '@/components/Loader.vue'
 const isOpen = ref(false)
 
 const router = useRouter()
@@ -211,9 +215,12 @@ const handleSelectedPerson = (person) => {
   selectedPerson.value = person
   console.log('Выбранный человек:', selectedPerson.value)
 }
+// лоадер
+const isLoading = ref(false)
 
 const handleEditCardPatient = async () => {
   isOpen.value = true
+  isLoading.value = true
   try {
     const formData = new FormData()
     formData.append('userId', authStore.id)
@@ -231,11 +238,14 @@ const handleEditCardPatient = async () => {
   } catch (error) {
     console.error(error)
     toast.error('Произошла ошибка при обновлении карточки пациента')
+  } finally {
+    isLoading.value = false
   }
 }
 
 const handleEditProfile = async () => {
   try {
+    isLoading.value = true
     const formData = new FormData()
     formData.append('userId', authStore.id)
     formData.append('gender', selectedGender.value)
@@ -256,6 +266,8 @@ const handleEditProfile = async () => {
   } catch (error) {
     console.error(error)
     toast.error('Произошла ошибка при обновлении профиля')
+  } finally {
+    isLoading.value = false
   }
 }
 </script>
