@@ -8,6 +8,12 @@ export const useDoctorStore = defineStore('doctor', {
     doctorPersonalOnline: {},
   }),
   actions: {
+    clearDoctorChatList() {
+      this.doctorChatList = []
+    },
+    clearDoctorList() {
+      this.doctorList = []
+    },
     setDoctorChatList(data) {
       this.doctorChatList = data
     },

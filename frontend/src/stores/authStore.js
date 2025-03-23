@@ -13,6 +13,7 @@ export const useAuthStore = defineStore('auth', {
     patientId: null,
     birthdate: null,
     photo_user: null,
+    isModalOpen: false,
   }),
   actions: {
     setAccessToken(token) {

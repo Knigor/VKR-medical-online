@@ -101,6 +101,10 @@ const selectedGender = ref('')
 const fio = ref('')
 const isLoadingRegister = ref(false)
 
+const handleModalOpen = () => {
+  isModalOpen.value = true
+}
+
 const handleRegister = async (body) => {
   isLoadingRegister.value = true
   isError.value = false
@@ -182,7 +186,7 @@ const goToProfile = () => {
       </div>
 
       <div v-else class="mt-2">
-        <Button @click="isModalOpen = !isModalOpen" variant="outline">
+        <Button @click="handleModalOpen" variant="outline">
           <span class="text-base leading-8 font-light font-golos">Войти</span>
         </Button>
       </div>

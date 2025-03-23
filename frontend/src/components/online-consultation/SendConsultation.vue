@@ -8,40 +8,51 @@
         >Запись по местному времени</span
       >
     </div>
-    <div v-if="!statusChat">
-      <div class="flex flex-wrap gap-2 mt-4">
-        <Button
-          v-for="(date, index) in dateConsultation.slice(0, 3)"
-          :key="date.id"
-          @click="index === 2 ? (showModal = true) : selectDate(date)"
-          variant="outline"
-          class="rounded-full"
-          :class="
-            selectedDateId === date.id
-              ? 'bg-pink-300 border-pink-300 text-white hover:bg-pink-300 hover:text-white'
-              : ''
-          "
-        >
-          {{ index === 2 ? 'Другой день' : date.day }}
-        </Button>
+    <div v-if="dateConsultation.length">
+      <div v-if="!statusChat">
+        <div class="flex flex-wrap gap-2 mt-4">
+          <Button
+            v-for="(date, index) in dateConsultation.slice(0, 3)"
+            :key="date.id"
+            @click="index === 2 ? (showModal = true) : selectDate(date)"
+            variant="outline"
+            class="rounded-full"
+            :class="
+              selectedDateId === date.id
+                ? 'bg-pink-300 border-pink-300 text-white hover:bg-pink-300 hover:text-white'
+                : ''
+            "
+          >
+            {{ index === 2 ? 'Другой день' : date.day }}
+          </Button>
+        </div>
+        <div class="flex flex-wrap gap-4 mt-4 mb-4 max-w-[400px]" v-if="selectedTime.length">
+          <Button
+            variant="outline"
+            class="rounded-2xl hover:bg-pink-300 hover:text-white hover:border-pink-300"
+            v-for="t in selectedTime"
+            :key="t"
+            @click="selectTime(t, selectedDate)"
+            >{{ t }}</Button
+          >
+        </div>
       </div>
-      <div class="flex flex-wrap gap-4 mt-4 mb-4 max-w-[400px]" v-if="selectedTime.length">
-        <Button
-          variant="outline"
-          class="rounded-2xl hover:bg-pink-300 hover:text-white hover:border-pink-300"
-          v-for="t in selectedTime"
-          :key="t"
-          @click="selectTime(t, selectedDate)"
-          >{{ t }}</Button
-        >
-      </div>
+      <Button
+        @click="
+          goToOnlineConsultation(
+            id,
+            statusChat,
+            doctorUsername,
+            patientUsername,
+            patientId,
+            doctorId,
+          )
+        "
+        class="mt-4 bg-pink-300 hover:bg-pink-400 rounded-2xl"
+        v-else
+        >Перейти в чат</Button
+      >
     </div>
-    <Button
-      @click="router.push(`/chat/${chatId}`)"
-      class="mt-4 bg-pink-300 hover:bg-pink-400 rounded-2xl"
-      v-else
-      >Перейти в чат</Button
-    >
 
     <!-- Модалка для другого времени-->
     <TransitionRoot appear :show="showModal" as="template">
@@ -198,7 +209,31 @@ const props = defineProps({
   statusChat: Boolean,
   doctorId: Number,
   chatId: Number,
+  patientUsername: String,
+  doctorUsername: String,
+  id: Number,
+  patientId: Number,
 })
+
+const goToOnlineConsultation = (
+  id,
+  statusChat,
+  doctorUsername,
+  patientUsername,
+  patientId,
+  doctorId,
+) => {
+  router.push({
+    path: `/chat/${id}`,
+    query: {
+      statusChat,
+      doctorUsername,
+      patientUsername,
+      patientId,
+      doctorId,
+    },
+  })
+}
 
 const scheduleData = ref(props.schedule)
 

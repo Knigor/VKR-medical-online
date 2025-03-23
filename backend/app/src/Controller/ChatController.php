@@ -114,12 +114,12 @@ class ChatController extends AbstractController
         // Получаем query параметры
         $patientId = $request->query->get('patientId');
         $doctorId = $request->query->get('doctorId');
-
+    
         // Проверяем, что хотя бы один из параметров передан
         if (!$patientId && !$doctorId) {
             return $this->json(['error' => 'patientId or doctorId is required'], 400);
         }
-
+    
         // Формируем условие для поиска чатов
         $criteria = [];
         
@@ -130,7 +130,7 @@ class ChatController extends AbstractController
             }
             $criteria['patient'] = $patient;
         }
-
+    
         if ($doctorId) {
             $doctor = $em->getRepository(Doctor::class)->find($doctorId);
             if (!$doctor) {
@@ -138,16 +138,11 @@ class ChatController extends AbstractController
             }
             $criteria['doctor'] = $doctor;
         }
-
+    
         // Ищем чаты по заданным критериям
         $chats = $em->getRepository(Chat::class)->findBy($criteria);
-
-        // Если чатов нет
-        if (!$chats) {
-            return $this->json(['message' => 'No chats found'], 200);
-        }
-
-        // Формируем ответ с чатом и информацией о пользователе
+    
+        // Если чатов нет, возвращаем пустой массив
         $chatData = [];
         foreach ($chats as $chat) {
             $patientUser = $chat->getPatient()->getUser();
@@ -162,30 +157,38 @@ class ChatController extends AbstractController
                 'statusChat' => $chat->getStatusChats(),
             ];
         }
-
+    
+        // Возвращаем пустой массив, если чатов нет
         return $this->json($chatData, 200);
     }
 
     #[Route('/api/chat/close', methods: ['POST'])]
     public function closeChat(Request $request, EntityManagerInterface $em): JsonResponse
     {
-        $chatId = $request->request->get('chatId');
+        // Получаем данные из тела запроса в формате JSON
+        $data = json_decode($request->getContent(), true);
+    
+        // Проверяем, есть ли поле chatId
+        $chatId = $data['chatId'] ?? null;
     
         if (!$chatId) {
-            return $this->json(['error' => 'Chat not found'], 404);
+            return $this->json(['error' => 'Chat ID is required'], 400);
         }
     
+        // Находим чат по ID
         $chat = $em->getRepository(Chat::class)->find($chatId);
     
         if (!$chat) {
             return $this->json(['error' => 'Chat not found'], 404);
         }
     
+        // Закрываем чат
         $chat->setStatusChats(false);
         $em->flush();
     
         return $this->json(['message' => 'Chat closed successfully', 'chatId' => $chat->getChatsId()], 200);
     }
+    
 
 
 }

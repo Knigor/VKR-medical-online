@@ -57,6 +57,10 @@
     </div>
 
     <SendConsultation
+      :patientUsername="filteredChatList[0]?.patientUsername"
+      :doctorUsername="filteredChatList[0]?.doctorUsername"
+      :id="filteredChatList[0]?.chatId"
+      :patientId="filteredChatList[0]?.patientId"
       :statusChat="statusChat"
       :schedule="schedule"
       :name="name"
@@ -73,8 +77,7 @@ import { useRouter, useRoute } from 'vue-router'
 import SendConsultation from './SendConsultation.vue'
 import { computed, ref } from 'vue'
 import { useDoctor } from '@/composables/doctor/useDoctor'
-
-// import { usePersonalDoctorStore } from '@/stores/personalDoctor'
+import { useDoctorStore } from '@/stores/doctorStore'
 
 const isSkeleton = ref(false)
 
@@ -98,6 +101,14 @@ const props = defineProps({
   statusChat: Boolean,
   chatId: Number,
 })
+
+const doctorStore = useDoctorStore()
+
+const filteredChatList = computed(() =>
+  doctorStore.doctorChatList.filter((item) => item.chatId === props.chatId),
+)
+
+console.log(filteredChatList.value)
 
 const avatarSrc = computed(() => {
   return import.meta.env.VITE_BASE_URL + props.photo

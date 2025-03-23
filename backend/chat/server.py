@@ -9,8 +9,8 @@ sio = socketio.AsyncServer(cors_allowed_origins="*")
 app = web.Application()
 sio.attach(app)
 
-# Фейковая база данных (можно заменить на PostgreSQL, MongoDB)
-chats = {}  # {chat_id: [{"username": "user", "message": "text", "timestamp": "time"}]}
+
+chats = {}  
 connected_users = {}
 
 # МСК часовой пояс

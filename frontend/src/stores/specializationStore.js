@@ -8,5 +8,8 @@ export const useSpecializationStore = defineStore('specialization', {
     setSpecializationData(data) {
       this.specializationData = data
     },
+    clearSpecializationData() {
+      this.specializationData = []
+    },
   },
 })

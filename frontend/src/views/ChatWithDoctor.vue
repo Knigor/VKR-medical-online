@@ -1,11 +1,25 @@
 <template>
   <div class="flex mt-8 ml-16 flex-col">
     <h1 class="text-3xl leading-9 font-semibold font-golos">Онлайн чат</h1>
+
+    <Button class="w-[75px] h-6 flex flex-wrap mb-6" @click="goBack" variant="link"
+      >На главную</Button
+    >
+
     <div class="flex gap-4 mt-4 mr-14 min-h-[400px] max-h-[460px] flex-1">
       <!-- Левая панель -->
-      <!-- <div class="w-1/4 bg-gray-100 p-4 rounded-lg shadow-md">
-        <SideBarChat />
-      </div> -->
+      <div v-if="filteredOnlineChats.length" class="w-1/4 bg-gray-100 p-4 rounded-lg shadow-md">
+        <SideBarChat
+          v-for="doctor in filteredOnlineChats"
+          :key="doctor.chatId"
+          :id="doctor.chatId"
+          :patientUsername="doctor.patientUsername"
+          :doctorUsername="doctor.doctorUsername"
+          :statusChat="doctor.statusChat"
+          :patientId="doctor.patientId"
+          :doctorId="doctor.doctorId"
+        />
+      </div>
 
       <!-- Основная часть чата -->
       <div class="flex-1 bg-white p-4 rounded-lg border shadow-md flex flex-col">
@@ -16,10 +30,16 @@
         <!-- Ввод сообщения -->
         <!-- Ввод сообщения -->
         <div class="flex items-center border-t pt-4 mt-4 gap-2">
+          <button
+            @click="closeChat"
+            class="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            Завершить чат
+          </button>
           <input
             v-model="newMessage"
             type="text"
-            class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
             placeholder="Введите сообщение"
             @keyup.enter="sendMessage"
           />
@@ -36,13 +56,13 @@
           <button
             @click="sendImage"
             v-if="imagePreview"
-            class="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            class="p-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600"
           >
             Отправить изображение
           </button>
           <button
             @click="sendMessage"
-            class="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            class="p-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600"
           >
             Отправить
           </button>
@@ -53,20 +73,33 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick, computed } from 'vue'
-// import SideBarChat from '@/components/chat-components/SideBarChat.vue'
+import { ref, onMounted, onBeforeUnmount, nextTick, computed, watch } from 'vue'
+import SideBarChat from '@/components/chat-components/SideBarChat.vue'
 import MainBarChat from '@/components/chat-components/MainBarChat.vue'
 import { useAuthStore } from '@/stores/authStore'
 import io from 'socket.io-client'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { Camera } from 'lucide-vue-next'
+import Button from '@/components/ui/button/Button.vue'
+import { useDoctorStore } from '@/stores/doctorStore'
+import { useChat } from '@/composables/chat/useChat'
+
+const { closeChatAPI, getChatListPacient, getChatListDoctor } = useChat()
+const doctorStore = useDoctorStore()
+
+const filteredOnlineChats = computed(() =>
+  doctorStore.doctorChatList.filter((item) => item.statusChat === true),
+)
 
 const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 const socket = io('http://localhost:5000')
 
+const goBack = () => router.push('/')
+
 // Данные чата
-const chatId = route.params.idChat
+const chatId = ref(route.params.idChat)
 // const statusChat = route.query.statusChat
 const doctorUsername = route.query.doctorUsername || ''
 const patientUsername = route.query.patientUsername || ''
@@ -90,13 +123,43 @@ const newMessage = ref('')
 const fileInput = ref(null)
 const chatContainer = ref(null)
 
+const closeChat = async () => {
+  const isConfirmed = confirm('Вы уверены, что хотите завершить чат?')
+
+  try {
+    if (isConfirmed) {
+      await closeChatAPI({ chatId: chatId.value })
+
+      await Promise.all([
+        authStore.patientId
+          ? getChatListPacient(authStore.patientId)
+          : getChatListDoctor(authStore.doctorId),
+      ])
+      router.push('/')
+    } else {
+      console.log('Чат не был завершен.')
+    }
+  } catch (error) {
+    console.error('Ошибка при завершении чата:', error)
+  }
+}
+
 // Подключение к WebSocket
 socket.on('connect', () => {
   console.log('Подключено к WebSocket серверу')
   if (!username.value) return
   socket.emit('login', { username: username.value })
-  socket.emit('join_chat', { chat_id: chatId, receiver: receiver.value })
+  socket.emit('join_chat', { chat_id: chatId.value, receiver: receiver.value })
 })
+
+watch(
+  () => route.params.idChat,
+  (newId) => {
+    chatId.value = newId
+    messages.value = [] // Очистка сообщений при смене чата
+    socket.emit('join_chat', { chat_id: newId, receiver: receiver.value }) // Переподключаемся к новому чату
+  },
+)
 
 socket.on('chat_history', (data) => {
   console.log('Получена история:', data) // Проверка данных
@@ -139,7 +202,7 @@ const sendMessage = () => {
   if (!newMessage.value.trim()) return
 
   const messageData = {
-    chat_id: chatId,
+    chat_id: chatId.value,
     message: newMessage.value,
     username: username.value,
     receiver: receiver.value,

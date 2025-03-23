@@ -14,9 +14,10 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useSpecializationStore } from '@/stores/specializationStore'
+import { useToast } from 'vue-toastification'
 
 import { useDoctorStore } from '@/stores/doctorStore'
-
+const toast = useToast()
 const router = useRouter()
 const authStore = useAuthStore()
 const doctorStore = useDoctorStore()
@@ -29,40 +30,53 @@ const filteredOnlineChats = computed(() =>
   doctorStore.doctorChatList.filter((item) => item.statusChat === true),
 )
 
+const emit = defineEmits(['update:isModalOpen'])
+
 const popularList = ref([
+  { id: 1, textPopular: 'Боль в горле', relatedSpecializations: 'Терапевт', image: 'text_1.jpg' },
+  { id: 3, textPopular: 'Простуда', relatedSpecializations: 'Педиатор', image: 'text_2.jpg' },
   {
-    id: 1,
-    textPopular: 'Боль в горле',
+    id: 5,
+    textPopular: 'Боль в суставах',
+    relatedSpecializations: 'Терапевт',
+    image: 'text_3.jpg',
   },
   {
     id: 2,
     textPopular: 'Последствие травм',
+    relatedSpecializations: 'Терапевт',
+    image: 'text_4.jpg',
   },
-  {
-    id: 3,
-    textPopular: 'Простуда',
-  },
+  { id: 6, textPopular: 'Аллергия', relatedSpecializations: 'Дерматолог', image: 'text_5.jpg' },
   {
     id: 4,
     textPopular: 'Отношения с партнером',
-  },
-  {
-    id: 5,
-    textPopular: 'Боль в суставах',
-  },
-  {
-    id: 6,
-    textPopular: 'Аллергия',
+    relatedSpecializations: 'Психолог',
+    image: 'text_6.jpg',
   },
   {
     id: 7,
     textPopular: 'Сексуальная жизнь',
+    relatedSpecializations: 'Гинеколог',
+    image: 'text_7.jpg',
   },
   {
     id: 8,
     textPopular: 'Проблемы с сердцем',
+    relatedSpecializations: 'Кардиолог',
+    image: 'text_8.jpg',
   },
 ])
+
+const goToPopular = (popular) => {
+  if (authStore.id === null) {
+    toast.success('Для начала авторизуйтесь')
+
+    return
+  } else {
+    router.push(`/online/${popular}`)
+  }
+}
 </script>
 
 <template>
@@ -117,7 +131,11 @@ const popularList = ref([
             class="sm:basis-1/3 md:basis-1/4 lg:basis-[200px] flex"
           >
             <div class="pr-14 flex">
-              <CardsPopular :popular-text="popular.textPopular" />
+              <CardsPopular
+                @click="goToPopular(popular.relatedSpecializations)"
+                :image="popular.image"
+                :popular-text="popular.textPopular"
+              />
             </div>
           </CarouselItem>
         </CarouselContent>
@@ -151,13 +169,12 @@ const popularList = ref([
           />
         </div>
       </div>
-
       <h2
+        v-if="authStore.id !== null"
         class="mt-6 sm:mt-8 lg:mt-[20px] text-xl sm:text-2xl lg:text-3xl leading-7 sm:leading-8 lg:leading-9 font-golos font-semibold"
       >
         Специалисты
       </h2>
-
       <div
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-[46px] mt-4 sm:mt-6 lg:mt-[43px] mb-8 sm:mb-12 lg:mb-[80px]"
       >

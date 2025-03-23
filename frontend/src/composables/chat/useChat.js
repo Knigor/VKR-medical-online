@@ -59,5 +59,14 @@ export const useChat = () => {
     }
   }
 
-  return { getChatList, chatStart, getChatListDoctor, getChatListPacient }
+  const closeChatAPI = async (data) => {
+    try {
+      await protectedAPI(`/api/chat/close`, 'POST', data)
+    } catch (error) {
+      console.error('Ошибка закрытия чата:', error)
+      throw error
+    }
+  }
+
+  return { getChatList, chatStart, getChatListDoctor, getChatListPacient, closeChatAPI }
 }
